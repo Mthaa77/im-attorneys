@@ -40,7 +40,7 @@ import { MilestonesTimeline } from "@/components/im/MilestonesTimeline";
 import { LegalResources } from "@/components/im/LegalResources";
 
 import { FeesAndBilling } from "@/components/im/FeesAndBilling";
-import { PracticeAreaExplorer } from "@/components/im/PracticeAreaExplorer";
+import { PracticeAreaOnboarding } from "@/components/im/PracticeAreaOnboarding";
 import { OfficeHours } from "@/components/im/OfficeHours";
 
 import { BeforeAfterSlider } from "@/components/im/BeforeAfterSlider";
@@ -105,8 +105,8 @@ export default function Home() {
           <ServicesGrid onOpenPracticeArea={handleNavigatePracticeArea} />
         </section>
 
-        {/* Practice Area Explorer */}
-        <PracticeAreaExplorer onOpenPracticeArea={handleNavigatePracticeArea} />
+        {/* Practice Area — Interactive Onboarding Assessment */}
+        <PracticeAreaOnboarding />
 
         {/* Our Process */}
         <OurProcess />
