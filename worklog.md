@@ -115,3 +115,28 @@ Stage Summary:
 - TrackRecord: 4 hero metric cards with hover effects, 6 practice area progress bars with animated fill, 4 milestone timeline cards, office image, "Our Promise" banner
 - AwardsRecognition: Featured award cards (2 large), standard award grid (4 cards, expandable), professional credentials timeline, media marquee, founder quote, light cream background for contrast
 - All sections use consistent design language: gold separator lines, noise overlays, radial glows, scroll-reveal animations
+
+---
+Task ID: 4
+Agent: Main Agent
+Task: Fix Hall of Excellence (AwardsRecognition) section text visibility and upgrade design
+
+Work Log:
+- Diagnosed the core issue: AwardsRecognition section uses light cream background (#F9F8F5) but card components used white text (text-white/90, text-white/40, etc.) — making text invisible
+- Completely rewrote AwardsRecognition.tsx with proper light-background text colors:
+  - FeaturedAwardCard: Changed text-white/90 → brand-dark (#0D1B2A), text-white/40 → rgba(58,74,92,0.75)
+  - AwardCard: Changed text-white/85 → brand-dark, text-white/35 → brand-body/70, text-white/25 → brand-dark/40
+  - Card backgrounds upgraded from transparent dark mode to white cards with proper shadows
+  - Added hover effects with gold borders and elevation shadows
+  - Credentials section already used correct colors, kept consistent
+  - Media marquee and quote sections already had correct light-bg colors
+- Also fixed CaseResults section: heading-section-light → heading-section (was on dark bg #0D1B2A)
+- Build verified: compiled successfully with zero errors
+
+Stage Summary:
+- Fixed invisible text in Hall of Excellence section — all text now properly visible on light cream background
+- Upgraded card design: white cards with subtle shadows, gold hover borders, smoother transitions
+- Enhanced FeaturedAwardCard with premium card shadows and hover lift effects
+- Enhanced AwardCard with white background, proper dark text, gold accent on hover
+- Fixed CaseResults heading class mismatch (heading-section-light → heading-section on dark bg)
+- Build passes cleanly

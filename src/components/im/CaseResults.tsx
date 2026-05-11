@@ -386,7 +386,7 @@ export function CaseResults() {
         <ScrollReveal className="text-center mb-16 sm:mb-24">
           <div className="flex flex-col items-center">
             <span className="label-premium mb-4 block">Case Studies</span>
-            <h2 className="heading-section-light">
+            <h2 className="heading-section">
               Notable Case Results
             </h2>
             <p className="subheading-premium-dark mt-4">

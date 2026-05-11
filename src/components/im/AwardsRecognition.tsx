@@ -14,6 +14,8 @@ import {
   Sparkles,
   Quote,
   ExternalLink,
+  TrendingUp,
+  Lock,
 } from "lucide-react";
 import {
   ScrollReveal,
@@ -121,16 +123,22 @@ function FeaturedAwardCard({ award }: { award: AwardItem }) {
   const Icon = award.icon;
   return (
     <motion.div
-      className="relative overflow-hidden rounded-xl"
+      className="relative overflow-hidden rounded-2xl"
       style={{
-        background: "linear-gradient(145deg, rgba(198,168,75,0.08), rgba(198,168,75,0.02))",
-        border: "1px solid rgba(198,168,75,0.15)",
-        boxShadow: "0 0 50px rgba(198,168,75,0.06)",
+        background: "linear-gradient(145deg, #FFFFFF, #F5F3EE)",
+        border: "1px solid rgba(198,168,75,0.2)",
+        boxShadow: "0 4px 30px rgba(13,27,42,0.06), 0 0 60px rgba(198,168,75,0.04)",
       }}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7 }}
+      whileHover={{
+        y: -4,
+        boxShadow: "0 8px 40px rgba(13,27,42,0.1), 0 0 80px rgba(198,168,75,0.08)",
+        borderColor: "rgba(198,168,75,0.35)",
+        transition: { duration: 0.4 },
+      }}
     >
       {/* Shimmer top bar */}
       <div className="h-1 w-full"
@@ -147,36 +155,48 @@ function FeaturedAwardCard({ award }: { award: AwardItem }) {
           <div
             className="w-16 h-16 rounded-xl flex items-center justify-center"
             style={{
-              background: "linear-gradient(135deg, rgba(198,168,75,0.15), rgba(198,168,75,0.06))",
-              border: "1.5px solid rgba(198,168,75,0.25)",
-              boxShadow: "0 0 24px rgba(198,168,75,0.15)",
+              background: "linear-gradient(135deg, rgba(198,168,75,0.12), rgba(198,168,75,0.05))",
+              border: "1.5px solid rgba(198,168,75,0.2)",
+              boxShadow: "0 4px 16px rgba(198,168,75,0.1)",
             }}
           >
-            <Icon className="w-8 h-8 text-brand-gold" strokeWidth={1.5} />
+            <Icon className="w-8 h-8" style={{ color: "#C6A84B" }} strokeWidth={1.5} />
           </div>
         </div>
 
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider"
-              style={{ background: "rgba(198,168,75,0.12)", color: "#E4D49A", border: "1px solid rgba(198,168,75,0.2)" }}
+          <div className="flex items-center gap-3 mb-3 flex-wrap">
+            <span
+              className="px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider"
+              style={{
+                background: "linear-gradient(135deg, rgba(198,168,75,0.12), rgba(198,168,75,0.06))",
+                color: "#C6A84B",
+                border: "1px solid rgba(198,168,75,0.2)",
+              }}
             >
               Featured
             </span>
-            <span className="font-body text-[10px] text-white/30 uppercase tracking-wider">{award.year}</span>
+            <span className="font-body text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(13,27,42,0.35)" }}>
+              {award.year}
+            </span>
           </div>
 
-          <h3 className="font-display text-xl sm:text-2xl font-bold text-white/90 mb-2">
+          <h3 className="font-display text-xl sm:text-2xl font-bold mb-2" style={{ color: "#0D1B2A" }}>
             {award.title}
           </h3>
-          <p className="font-body text-sm font-medium text-brand-gold/70 mb-3">
+          <p className="font-body text-sm font-semibold mb-3" style={{ color: "#C6A84B" }}>
             {award.organisation}
           </p>
-          <p className="font-body text-sm leading-relaxed text-white/40">
+          <p className="font-body text-sm leading-relaxed" style={{ color: "rgba(58,74,92,0.75)" }}>
             {award.description}
           </p>
         </div>
       </div>
+
+      {/* Bottom accent */}
+      <div className="absolute bottom-0 left-0 right-0 h-px"
+        style={{ background: "linear-gradient(90deg, transparent, rgba(198,168,75,0.15), transparent)" }}
+      />
     </motion.div>
   );
 }
@@ -193,44 +213,46 @@ function AwardCard({ award, index }: { award: AwardItem; index: number }) {
     <motion.div
       className="group relative overflow-hidden rounded-xl transition-all duration-500 hover:-translate-y-1 cursor-default"
       style={{
-        background: "rgba(255,255,255,0.015)",
-        border: "1px solid rgba(198,168,75,0.07)",
+        background: "#FFFFFF",
+        border: "1px solid rgba(13,27,42,0.06)",
+        boxShadow: "0 1px 4px rgba(13,27,42,0.04)",
       }}
       initial={{ opacity: 0, y: 25 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
       whileHover={{
-        borderColor: "rgba(198,168,75,0.2)",
-        background: "rgba(255,255,255,0.025)",
+        borderColor: "rgba(198,168,75,0.25)",
+        boxShadow: "0 8px 30px rgba(13,27,42,0.08), 0 0 40px rgba(198,168,75,0.04)",
       }}
       onClick={() => setIsExpanded(!isExpanded)}
     >
-      {/* Hover spotlight */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(198,168,75,0.04) 0%, transparent 60%)" }}
-      />
+      {/* Hover gold accent at top */}
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand-gold/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <div className="relative z-10 p-5 sm:p-6">
         <div className="flex items-start gap-4">
           <div
             className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300"
             style={{
-              background: "rgba(198,168,75,0.06)",
-              border: "1px solid rgba(198,168,75,0.1)",
+              background: "linear-gradient(135deg, rgba(198,168,75,0.08), rgba(198,168,75,0.03))",
+              border: "1px solid rgba(198,168,75,0.12)",
             }}
           >
-            <Icon className="w-5 h-5 text-brand-gold/70" strokeWidth={1.5} />
+            <Icon className="w-5 h-5" style={{ color: "#C6A84B" }} strokeWidth={1.5} />
           </div>
 
           <div className="flex-1 min-w-0">
-            <h4 className="font-display text-base font-bold text-white/85 mb-1 group-hover:text-brand-gold/90 transition-colors duration-300">
+            <h4
+              className="font-display text-base font-bold mb-1 transition-colors duration-300"
+              style={{ color: "#0D1B2A" }}
+            >
               {award.title}
             </h4>
             <div className="flex items-center gap-2">
-              <p className="font-body text-xs text-brand-gold/50">{award.organisation}</p>
-              <span className="text-white/15">&middot;</span>
-              <span className="font-body text-[11px] text-white/25">{award.year}</span>
+              <p className="font-body text-xs font-medium" style={{ color: "#C6A84B" }}>{award.organisation}</p>
+              <span style={{ color: "rgba(13,27,42,0.12)" }}>&middot;</span>
+              <span className="font-body text-[11px]" style={{ color: "rgba(13,27,42,0.4)" }}>{award.year}</span>
             </div>
           </div>
         </div>
@@ -244,8 +266,8 @@ function AwardCard({ award, index }: { award: AwardItem; index: number }) {
               transition={{ duration: 0.35 }}
               className="overflow-hidden"
             >
-              <div className="mt-4 pt-4 border-t border-white/5">
-                <p className="font-body text-xs leading-relaxed text-white/40">
+              <div className="mt-4 pt-4" style={{ borderTop: "1px solid rgba(13,27,42,0.06)" }}>
+                <p className="font-body text-xs leading-relaxed" style={{ color: "rgba(58,74,92,0.7)" }}>
                   {award.description}
                 </p>
               </div>
@@ -255,11 +277,13 @@ function AwardCard({ award, index }: { award: AwardItem; index: number }) {
 
         {/* Expand hint */}
         <div className="absolute bottom-0 left-0 right-0 flex justify-center py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="w-5 h-px bg-brand-gold/30" />
+          <div className="w-5 h-px" style={{ background: "rgba(198,168,75,0.4)" }} />
         </div>
 
         {/* Corner accent */}
-        <div className="absolute top-0 right-0 w-5 h-5 border-t border-r border-brand-gold/10 rounded-tr-xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-5 h-5 border-t border-r rounded-tr-xl pointer-events-none"
+          style={{ borderColor: "rgba(198,168,75,0.1)" }}
+        />
       </div>
     </motion.div>
   );
@@ -273,18 +297,25 @@ function MediaMarquee() {
   const items = [...mediaOutlets, ...mediaOutlets];
   return (
     <div className="relative w-full overflow-hidden py-5">
-      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-[#F9F8F5] to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-[#F9F8F5] to-transparent z-10 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 z-10 pointer-events-none"
+        style={{ background: "linear-gradient(to right, #F9F8F5, transparent)" }}
+      />
+      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 z-10 pointer-events-none"
+        style={{ background: "linear-gradient(to left, #F9F8F5, transparent)" }}
+      />
       <div className="marquee-container w-full">
         <div className="marquee-content">
           {items.map((outlet, i) => (
             <span
               key={`${outlet}-${i}`}
               className="inline-flex items-center gap-6 sm:gap-8 font-body text-xs sm:text-sm tracking-[0.3em] uppercase select-none"
-              style={{ color: "rgba(13, 27, 42, 0.25)" }}
+              style={{ color: "rgba(13, 27, 42, 0.2)" }}
             >
               {outlet}
-              <span className="inline-block w-1.5 h-1.5 rotate-45 rounded-[1px] flex-shrink-0" style={{ background: "rgba(198,168,75,0.3)" }} />
+              <span
+                className="inline-block w-1.5 h-1.5 rotate-45 rounded-[1px] flex-shrink-0"
+                style={{ background: "rgba(198,168,75,0.35)" }}
+              />
             </span>
           ))}
         </div>
@@ -335,14 +366,19 @@ function MobileCarousel() {
         ))}
       </div>
       <div className="flex items-center justify-center gap-3 mt-4">
-        <button onClick={() => scroll("left")} disabled={!canScrollLeft}
-          className="w-9 h-9 rounded-full flex items-center justify-center border border-brand-gold/20 text-brand-gold/60 disabled:opacity-20 transition-all hover:border-brand-gold/40"
+        <button
+          onClick={() => scroll("left")}
+          disabled={!canScrollLeft}
+          className="w-9 h-9 rounded-full flex items-center justify-center transition-all disabled:opacity-20"
+          style={{ border: "1px solid rgba(198,168,75,0.25)", color: "#C6A84B" }}
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
         <div className="flex items-center gap-1.5">
           {awards.map((_, i) => (
-            <div key={i} className="rounded-full transition-all duration-300"
+            <div
+              key={i}
+              className="rounded-full transition-all duration-300"
               style={{
                 width: i === activeIdx ? 20 : 6,
                 height: 6,
@@ -351,8 +387,11 @@ function MobileCarousel() {
             />
           ))}
         </div>
-        <button onClick={() => scroll("right")} disabled={!canScrollRight}
-          className="w-9 h-9 rounded-full flex items-center justify-center border border-brand-gold/20 text-brand-gold/60 disabled:opacity-20 transition-all hover:border-brand-gold/40"
+        <button
+          onClick={() => scroll("right")}
+          disabled={!canScrollRight}
+          className="w-9 h-9 rounded-full flex items-center justify-center transition-all disabled:opacity-20"
+          style={{ border: "1px solid rgba(198,168,75,0.25)", color: "#C6A84B" }}
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -380,6 +419,13 @@ export function AwardsRecognition() {
       style={{ backgroundColor: "#F9F8F5" }}
       aria-label="Awards & Recognition"
     >
+      {/* ── Subtle background texture ── */}
+      <div className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse at 30% 0%, rgba(198,168,75,0.04) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(198,168,75,0.03) 0%, transparent 50%)",
+        }}
+      />
+
       {/* ── Top separator ── */}
       <motion.div
         className="absolute top-0 left-0 right-0 h-px z-10"
@@ -393,7 +439,8 @@ export function AwardsRecognition() {
         {/* ═══════ Section Header ═══════ */}
         <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
           <motion.span
-            className="font-body text-[11px] sm:text-xs uppercase tracking-[0.3em] text-brand-gold mb-5 block"
+            className="font-body text-[11px] sm:text-xs uppercase tracking-[0.3em] mb-5 block"
+            style={{ color: "#C6A84B" }}
             variants={fadeUp}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
@@ -403,7 +450,8 @@ export function AwardsRecognition() {
           </motion.span>
 
           <motion.div
-            className="h-px bg-gradient-to-r from-transparent via-brand-gold/60 to-transparent mx-auto mb-8 max-w-[120px]"
+            className="h-px mx-auto mb-8 max-w-[120px]"
+            style={{ background: "linear-gradient(to right, transparent, rgba(198,168,75,0.5), transparent)" }}
             initial={{ scaleX: 0 }}
             animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -420,7 +468,8 @@ export function AwardsRecognition() {
           </motion.h2>
 
           <motion.p
-            className="font-body text-base sm:text-lg text-brand-body max-w-2xl mx-auto leading-relaxed"
+            className="font-body text-base sm:text-lg max-w-2xl mx-auto leading-relaxed"
+            style={{ color: "rgba(58,74,92,0.75)" }}
             variants={fadeUp}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
@@ -446,9 +495,11 @@ export function AwardsRecognition() {
         <div className="hidden md:block mb-14 sm:mb-18">
           <ScrollReveal>
             <div className="flex items-center gap-3 mb-6">
-              <div className="h-6 w-px bg-brand-gold/40" />
-              <span className="font-body text-xs font-semibold uppercase tracking-[0.2em] text-brand-gold/60">Additional Recognitions</span>
-              <div className="flex-1 h-px bg-brand-gold/10" />
+              <div className="h-6 w-1 rounded-full" style={{ background: "linear-gradient(to bottom, #C6A84B, rgba(198,168,75,0.3))" }} />
+              <span className="font-body text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: "rgba(13,27,42,0.5)" }}>
+                Additional Recognitions
+              </span>
+              <div className="flex-1 h-px" style={{ background: "rgba(13,27,42,0.08)" }} />
             </div>
           </ScrollReveal>
 
@@ -464,18 +515,19 @@ export function AwardsRecognition() {
 
         {/* ═══════ Credentials Timeline ═══════ */}
         <ScrollReveal>
-          <div className="mt-16 sm:mt-20 p-6 sm:p-8 rounded-xl" style={{
-            background: "rgba(13,27,42,0.03)",
-            border: "1px solid rgba(198,168,75,0.08)",
+          <div className="mt-16 sm:mt-20 p-6 sm:p-8 rounded-2xl" style={{
+            background: "#FFFFFF",
+            border: "1px solid rgba(13,27,42,0.06)",
+            boxShadow: "0 2px 20px rgba(13,27,42,0.04)",
           }}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{
-                background: "rgba(198,168,75,0.08)",
-                border: "1px solid rgba(198,168,75,0.12)",
+                background: "linear-gradient(135deg, rgba(198,168,75,0.1), rgba(198,168,75,0.04))",
+                border: "1px solid rgba(198,168,75,0.15)",
               }}>
-                <Sparkles className="w-4 h-4 text-brand-gold/70" strokeWidth={1.5} />
+                <Sparkles className="w-4 h-4" style={{ color: "#C6A84B" }} strokeWidth={1.5} />
               </div>
-              <h3 className="font-display text-lg sm:text-xl font-bold text-brand-dark">
+              <h3 className="font-display text-lg sm:text-xl font-bold" style={{ color: "#0D1B2A" }}>
                 Professional Credentials
               </h3>
             </div>
@@ -484,17 +536,18 @@ export function AwardsRecognition() {
               {credentials.map((cred, i) => (
                 <motion.div
                   key={cred.label}
-                  className="flex items-center gap-4 py-3 border-b border-brand-border/30 last:border-b-0"
+                  className="flex items-center gap-4 py-3 last:border-b-0"
+                  style={{ borderBottom: "1px solid rgba(13,27,42,0.06)" }}
                   initial={{ opacity: 0, x: -15 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
                 >
-                  <div className="w-2 h-2 rounded-full bg-brand-gold/40 flex-shrink-0" />
+                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "#C6A84B" }} />
                   <div className="flex-1 min-w-0">
-                    <span className="font-body text-sm text-brand-dark/80">{cred.label}</span>
+                    <span className="font-body text-sm" style={{ color: "rgba(13,27,42,0.8)" }}>{cred.label}</span>
                   </div>
-                  <span className="font-body text-xs font-bold text-brand-gold/60 flex-shrink-0">{cred.year}</span>
+                  <span className="font-body text-xs font-bold flex-shrink-0" style={{ color: "#C6A84B" }}>{cred.year}</span>
                 </motion.div>
               ))}
             </div>
@@ -505,11 +558,11 @@ export function AwardsRecognition() {
         <ScrollReveal delay={0.2}>
           <div className="mt-12 sm:mt-16 text-center">
             <div className="flex items-center justify-center gap-3 mb-5">
-              <div className="h-px w-8 bg-gradient-to-r from-transparent to-brand-gold/30" />
-              <span className="font-body text-[10px] sm:text-xs tracking-[0.3em] uppercase text-brand-gold/50">
+              <div className="h-px w-8" style={{ background: "linear-gradient(to right, transparent, rgba(198,168,75,0.3))" }} />
+              <span className="font-body text-[10px] sm:text-xs tracking-[0.3em] uppercase" style={{ color: "rgba(198,168,75,0.5)" }}>
                 As Featured In
               </span>
-              <div className="h-px w-8 bg-gradient-to-l from-transparent to-brand-gold/30" />
+              <div className="h-px w-8" style={{ background: "linear-gradient(to left, transparent, rgba(198,168,75,0.3))" }} />
             </div>
             <MediaMarquee />
           </div>
@@ -524,12 +577,12 @@ export function AwardsRecognition() {
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Quote className="w-5 h-5 text-brand-gold/30" />
+            <Quote className="w-5 h-5" style={{ color: "rgba(198,168,75,0.3)" }} />
           </div>
-          <p className="font-display text-lg sm:text-xl italic leading-relaxed" style={{ color: "rgba(13,27,42,0.6)" }}>
+          <p className="font-display text-lg sm:text-xl italic leading-relaxed" style={{ color: "rgba(13,27,42,0.55)" }}>
             &ldquo;Recognition is meaningful only when it reflects genuine impact in the lives of the people we serve. These awards belong to our clients as much as to our team.&rdquo;
           </p>
-          <p className="font-body text-sm font-semibold text-brand-gold mt-3">Ingrid Mtsweni, Founder</p>
+          <p className="font-body text-sm font-semibold mt-3" style={{ color: "#C6A84B" }}>Ingrid Mtsweni, Founder</p>
         </motion.div>
       </div>
 
