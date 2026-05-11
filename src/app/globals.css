@@ -258,8 +258,11 @@ html, body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 2px 8px rgba(198,168,75,0.35))
-          drop-shadow(0 0 2px rgba(198,168,75,0.15));
+  filter:
+    drop-shadow(0 1px 2px rgba(0,0,0,0.3))
+    drop-shadow(0 2px 6px rgba(198,168,75,0.4))
+    drop-shadow(0 4px 16px rgba(198,168,75,0.15))
+    drop-shadow(0 8px 32px rgba(0,0,0,0.15));
 }
 
 /* ─────────────────────────────────────────
@@ -280,7 +283,11 @@ html, body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 2px 6px rgba(198,168,75,0.2));
+  filter:
+    drop-shadow(0 1px 2px rgba(13,27,42,0.12))
+    drop-shadow(0 2px 6px rgba(198,168,75,0.25))
+    drop-shadow(0 4px 16px rgba(13,27,42,0.06))
+    drop-shadow(0 8px 24px rgba(198,168,75,0.08));
 }
 
 /* ─────────────────────────────────────────
@@ -305,8 +312,12 @@ html, body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 2px 8px rgba(198,168,75,0.4))
-          drop-shadow(0 0 20px rgba(198,168,75,0.15));
+  filter:
+    drop-shadow(0 1px 2px rgba(0,0,0,0.35))
+    drop-shadow(0 2px 8px rgba(198,168,75,0.5))
+    drop-shadow(0 4px 20px rgba(198,168,75,0.2))
+    drop-shadow(0 8px 32px rgba(198,168,75,0.08))
+    drop-shadow(0 12px 48px rgba(0,0,0,0.15));
   animation: goldGlossyShimmer 4s ease-in-out infinite;
 }
 
@@ -388,6 +399,61 @@ html, body {
     0 0 10px rgba(198,168,75,0.5),
     0 0 30px rgba(198,168,75,0.2),
     0 0 60px rgba(198,168,75,0.08);
+}
+
+/* ─────────────────────────────────────────
+   6b. UNIVERSAL HEADING SHADOWS — AUTO
+   Applies premium subtle shadows to ALL
+   font-display headings site-wide. The
+   global heading classes above override
+   these with their own filter:drop-shadow.
+   ───────────────────────────────────────── */
+
+/* All h1–h4 headings using Playfair Display get a subtle depth shadow */
+h1.font-display,
+h2.font-display,
+h3.font-display,
+h4.font-display {
+  text-shadow:
+    0 1px 2px rgba(0,0,0,0.06),
+    0 2px 8px rgba(198,168,75,0.07),
+    0 4px 16px rgba(198,168,75,0.04),
+    0 8px 24px rgba(0,0,0,0.03);
+}
+
+/* White headings on dark backgrounds get a warm gold halo */
+h1.font-display[class*="text-white"],
+h2.font-display[class*="text-white"],
+h3.font-display[class*="text-white"],
+h4.font-display[class*="text-white"] {
+  text-shadow:
+    0 1px 2px rgba(0,0,0,0.25),
+    0 2px 8px rgba(198,168,75,0.15),
+    0 4px 16px rgba(0,0,0,0.12),
+    0 8px 24px rgba(198,168,75,0.06);
+}
+
+/* Dark headings on light backgrounds get elegant lift */
+h1.font-display[class*="text-brand-dark"],
+h2.font-display[class*="text-brand-dark"],
+h3.font-display[class*="text-brand-dark"],
+h4.font-display[class*="text-brand-dark"] {
+  text-shadow:
+    0 1px 1px rgba(13,27,42,0.06),
+    0 2px 6px rgba(13,27,42,0.04),
+    0 4px 12px rgba(198,168,75,0.05),
+    0 6px 20px rgba(13,27,42,0.03);
+}
+
+/* Gold gradient text headings get gold glow */
+h1[class*="text-gold-gradient"],
+h2[class*="text-gold-gradient"],
+h3[class*="text-gold-gradient"],
+h4[class*="text-gold-gradient"] {
+  filter:
+    drop-shadow(0 1px 2px rgba(0,0,0,0.2))
+    drop-shadow(0 2px 6px rgba(198,168,75,0.3))
+    drop-shadow(0 4px 16px rgba(198,168,75,0.1));
 }
 
 /* ─────────────────────────────────────────

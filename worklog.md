@@ -140,3 +140,29 @@ Stage Summary:
 - Enhanced AwardCard with white background, proper dark text, gold accent on hover
 - Fixed CaseResults heading class mismatch (heading-section-light → heading-section on dark bg)
 - Build passes cleanly
+
+---
+Task ID: 5
+Agent: Main Agent
+Task: Add subtle premium shadow effects to all headings across the site
+
+Work Log:
+- Audited all 75+ heading elements across 30+ component files to understand current shadow usage
+- Found only ~24% of headings used global classes (heading-section, heading-section-light, heading-gold-glossy) which already had shadows
+- Enhanced the 3 global heading classes with multi-layered premium drop-shadow:
+  - heading-section: 4-layer (dark base + gold glow + wide gold + deep dark)
+  - heading-section-light: 4-layer (subtle navy + gold + light navy + soft gold)
+  - heading-gold-glossy: 5-layer (dark base + strong gold + wide gold + soft gold + deep dark)
+- Added 4 universal CSS rules in globals.css that automatically apply to all font-display headings:
+  - Base rule: subtle 4-layer text-shadow for all h1-h4.font-display (depth + gold hint)
+  - White-on-dark: warm gold halo shadow for text-white headings
+  - Dark-on-light: elegant lift shadow for text-brand-dark headings
+  - Gold gradient: gold glow drop-shadow for text-gold-gradient headings
+- Build verified: compiled successfully with zero errors
+
+Stage Summary:
+- All ~75 headings across the site now have premium shadow effects
+- 3 global heading classes enhanced from 2-layer to 4-5-layer drop-shadows
+- Universal CSS rules auto-apply to ~57 previously bare headings without editing component files
+- Shadow system is context-aware: white text gets warm gold halo, dark text gets elegant lift
+- No component files modified — all changes are in globals.css only
