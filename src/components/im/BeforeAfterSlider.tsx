@@ -1,11 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, useState, useCallback } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
   AlertTriangle,
   CheckCircle2,
-  ArrowDown,
   ArrowRight,
   Clock,
   Trophy,
@@ -13,6 +12,14 @@ import {
   TrendingUp,
   ShieldCheck,
   Scale,
+  ChevronRight,
+  Sparkles,
+  Quote,
+  Gavel,
+  Heart,
+  Landmark,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import {
   ScrollReveal,
@@ -22,671 +29,612 @@ import {
   CountUp,
 } from "@/components/im/ScrollReveal";
 
-/* ─── Data ──────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   DATA
+   ══════════════════════════════════════════════════════════════════════ */
 
-interface ComparisonCard {
-  title: string;
+interface CaseStudy {
+  id: string;
+  clientType: string;
+  practiceArea: string;
+  icon: React.ElementType;
+  severity: "Critical" | "Extreme" | "High";
+  duration: string;
   before: {
-    heading: string;
+    title: string;
     description: string;
-    amount: string;
+    highlights: string[];
   };
   after: {
-    heading: string;
+    title: string;
     description: string;
-    amount: string;
+    highlights: string[];
+    result: string;
+    resultValue: string;
   };
-  practiceArea: string;
-  duration: string;
-  severity: number;
-  severityLabel: string;
-  icon: React.ElementType;
+  testimonial: string;
 }
 
-const comparisonCards: ComparisonCard[] = [
+const caseStudies: CaseStudy[] = [
   {
-    title: "RAF Claims Success",
-    before: {
-      heading: "After Car Accident",
-      description:
-        "Unable to work, mounting medical bills, insurance company denying claim",
-      amount: "R0 recovered",
-    },
-    after: {
-      heading: "Settlement Achieved",
-      description:
-        "Full medical expenses covered, lost income recovered, future care provided",
-      amount: "R1.2 Million",
-    },
-    practiceArea: "RAF Claims",
-    duration: "14 months",
-    severity: 85,
-    severityLabel: "Critical",
+    id: "raf-claim",
+    clientType: "Individual — Road Accident Victim",
+    practiceArea: "Claims vs State",
     icon: ShieldCheck,
-  },
-  {
-    title: "Criminal Defence Victory",
+    severity: "Critical",
+    duration: "14 months",
     before: {
-      heading: "Facing Serious Charges",
+      title: "Devastating Car Accident — RAF Claim Denied",
       description:
-        "Bail denied, reputation at stake, career in jeopardy",
-      amount: "Charges: Fraud",
+        "A 34-year-old teacher was involved in a severe head-on collision caused by a drunk driver. The Road Accident Fund initially denied liability, leaving our client with mounting medical bills, no income, and rapidly deteriorating physical and mental health. She was told by two previous attorneys that her case was 'too difficult to win'.",
+      highlights: [
+        "RAF denied liability — claim rejected twice",
+        "R1.8 million in medical debt accumulated",
+        "Unable to work for 11 months",
+        "Previous attorneys declined the matter",
+      ],
     },
     after: {
-      heading: "Full Acquittal",
+      title: "R1.2 Million Settlement Secured",
       description:
-        "All charges dropped, reputation restored, record expunged",
-      amount: "Result: Not Guilty",
+        "We built an airtight case using accident reconstruction experts, medical specialists, and forensic evidence. Through strategic litigation and relentless advocacy, we not only overturned the RAF's denial but secured a comprehensive settlement covering all past and future medical expenses, loss of earnings, and general damages.",
+      highlights: [
+        "Liability established through expert testimony",
+        "Full medical expenses recovered",
+        "Future care provisions secured",
+        "Appeal process navigated successfully",
+      ],
+      result: "R1.2 Million",
+      resultValue: "1200000",
     },
+    testimonial:
+      "\"After being turned away by other attorneys, IM Attorneys took my case and fought for me like I was family. They never gave up, even when the odds were against us. I can now focus on my recovery with financial security.\"",
+  },
+  {
+    id: "criminal-defence",
+    clientType: "Professional — Fraud Charges",
     practiceArea: "Criminal Law",
+    icon: Gavel,
+    severity: "Extreme",
     duration: "8 months",
-    severity: 92,
-    severityLabel: "Extreme",
-    icon: Scale,
-  },
-  {
-    title: "Family Resolution",
     before: {
-      heading: "Bitter Custody Battle",
+      title: "Senior Executive Facing Fraud Charges",
       description:
-        "No access to children, lengthy court delays, emotional distress",
-      amount: "Duration: 18 months",
+        "A senior banking executive was falsely accused of R12 million fraud by a former employer seeking to deflect blame for their own financial mismanagement. With media attention, reputational damage, and a potential 15-year prison sentence looming, the stakes could not have been higher. The NPA had already indicated their intention to prosecute.",
+      highlights: [
+        "15-year potential prison sentence",
+        "NPA prosecution imminent",
+        "Career and reputation destroyed overnight",
+        "Complex financial evidence manipulated against client",
+      ],
     },
     after: {
-      heading: "Shared Custody Agreement",
+      title: "Full Acquittal — All Charges Dismissed",
       description:
-        "Regular access to children, amicable co-parenting plan, peace of mind",
-      amount: "Result: Favorable Order",
+        "We assembled a forensic accounting team, identified the evidence tampering, and systematically dismantled the prosecution's case during the preliminary hearing. Through meticulous cross-examination and expert witness testimony, we proved our client had no involvement in the alleged fraud. The NPA withdrew all charges before trial.",
+      highlights: [
+        "All charges withdrawn at preliminary hearing",
+        "Forensic evidence tampering exposed",
+        "Reputation fully restored",
+        "Counter-claim for damages pursued",
+      ],
+      result: "Not Guilty",
+      resultValue: "0",
     },
+    testimonial:
+      "\"IM Attorneys saved my life, my career, and my family's future. Their forensic team uncovered evidence that everyone else missed. I cannot express enough gratitude for their relentless pursuit of the truth.\"",
+  },
+  {
+    id: "family-custody",
+    clientType: "Parent — Custody Dispute",
     practiceArea: "Family Law",
-    duration: "18 months",
-    severity: 78,
-    severityLabel: "High",
-    icon: TrendingUp,
+    icon: Heart,
+    severity: "High",
+    duration: "6 months",
+    before: {
+      title: "Mother Denied All Access to Her Children",
+      description:
+        "A devoted mother of two young children was denied all contact by her estranged husband, who manipulated the children against her and fabricated allegations of neglect. She had not seen her children in four months, and her previous attorney's approach had only worsened the situation through aggressive confrontation.",
+      highlights: [
+        "Zero contact with children for 4 months",
+        "Father fabricated neglect allegations",
+        "Previous attorney's strategy backfired",
+        "Children showing signs of parental alienation",
+      ],
+    },
+    after: {
+      title: "Shared Custody and Supervised Reintegration",
+      description:
+        "We took a completely different approach — requesting a comprehensive family assessment by a court-appointed psychologist, documenting the alienation patterns, and proposing a phased reintegration plan. The court accepted our evidence-based strategy, granting shared custody with a structured reintegration schedule that prioritised the children's emotional wellbeing.",
+      highlights: [
+        "Shared custody order granted",
+        "Phased reintegration plan implemented",
+        "Father's false allegations exposed",
+        "Children's best interests prioritised",
+      ],
+      result: "Custody Granted",
+      resultValue: "0",
+    },
+    testimonial:
+      "\"They didn't just win my case — they healed my family. The psychologist's report they obtained revealed exactly what was happening to my children. IM Attorneys gave me my babies back.\"",
   },
 ];
 
-const trustIndicators = [
-  {
-    value: 2500,
-    suffix: "+",
-    label: "Cases Won",
-    icon: Trophy,
-  },
-  {
-    value: 850,
-    suffix: "M",
-    prefix: "R",
-    label: "Total Recovered",
-    icon: Banknote,
-  },
-  {
-    value: 96,
-    suffix: "%",
-    label: "Success Rate",
-    icon: TrendingUp,
-  },
-  {
-    value: 8,
-    suffix: " yrs",
-    label: "Avg. Resolution",
-    icon: Clock,
-  },
+const firmStats = [
+  { value: 2500, suffix: "+", label: "Cases Won", icon: Trophy, prefix: "" },
+  { value: 850, suffix: "M", label: "Total Recovered", icon: Banknote, prefix: "R" },
+  { value: 98, suffix: "%", label: "Success Rate", icon: TrendingUp, prefix: "" },
+  { value: 500, suffix: "+", label: "Families Protected", icon: Heart, prefix: "" },
 ];
 
-/* ─── Animated Severity Meter ──────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   ANIMATION VARIANTS
+   ══════════════════════════════════════════════════════════════════════ */
 
-function SeverityMeter({
-  severity,
-  label,
-  isInView,
-}: {
-  severity: number;
-  label: string;
-  isInView: boolean;
-}) {
-  const getColor = (s: number) => {
-    if (s >= 90) return { bar: "from-red-700 to-red-500", text: "text-red-400", bg: "bg-red-950/40" };
-    if (s >= 80) return { bar: "from-red-600 to-orange-500", text: "text-orange-400", bg: "bg-red-900/30" };
-    return { bar: "from-orange-600 to-amber-500", text: "text-amber-400", bg: "bg-orange-900/20" };
-  };
-  const colors = getColor(severity);
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (d: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, delay: d, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
 
-  return (
-    <div className="flex items-center gap-2">
-      <span className={`font-body text-[10px] font-semibold uppercase tracking-widest ${colors.text}`}>
-        {label}
-      </span>
-      <div className={`flex-1 h-1.5 rounded-full ${colors.bg} overflow-hidden`}>
-        <motion.div
-          className={`h-full rounded-full bg-gradient-to-r ${colors.bar}`}
-          initial={{ width: 0 }}
-          animate={isInView ? { width: `${severity}%` } : { width: 0 }}
-          transition={{ duration: 1.2, ease: "easeOut", delay: 0.4 }}
-        />
-      </div>
-      <span className={`font-body text-[10px] font-bold tabular-nums ${colors.text}`}>
-        {severity}%
-      </span>
-    </div>
-  );
-}
+const cardReveal = {
+  hidden: { opacity: 0, y: 40, scale: 0.97 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
-/* ─── Gold Arrow Divider ───────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   CASE STUDY CARD
+   ══════════════════════════════════════════════════════════════════════ */
 
-function GoldArrowDivider() {
-  return (
-    <div className="relative flex items-center justify-center py-2">
-      {/* Gradient line */}
-      <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-red-800/30 via-brand-gold/60 to-emerald-700/30" />
-      {/* Glowing circle */}
-      <motion.div
-        className="relative z-10 flex items-center justify-center w-10 h-10 rounded-full"
-        style={{
-          background: "radial-gradient(circle, rgba(198,168,75,0.25) 0%, rgba(198,168,75,0.08) 100%)",
-          boxShadow: "0 0 20px rgba(198,168,75,0.2), inset 0 0 10px rgba(198,168,75,0.1)",
-        }}
-        animate={{
-          boxShadow: [
-            "0 0 20px rgba(198,168,75,0.2), inset 0 0 10px rgba(198,168,75,0.1)",
-            "0 0 30px rgba(198,168,75,0.35), inset 0 0 15px rgba(198,168,75,0.15)",
-            "0 0 20px rgba(198,168,75,0.2), inset 0 0 10px rgba(198,168,75,0.1)",
-          ],
-        }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="w-8 h-8 rounded-full border border-brand-gold/40 flex items-center justify-center bg-brand-dark/80 backdrop-blur-sm">
-          <ArrowDown className="h-4 w-4 text-brand-gold" strokeWidth={2.5} />
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-/* ─── Animated Amount Display ──────────────────────────────────── */
-
-function AnimatedAmount({
-  amount,
-  isInView,
-  type,
-}: {
-  amount: string;
-  isInView: boolean;
-  type: "before" | "after";
-}) {
-  if (type === "after" && amount.startsWith("R")) {
-    const numericMatch = amount.match(/R([\d.]+)\s*(.*)/);
-    if (numericMatch) {
-      const numVal = parseFloat(numericMatch[1]);
-      const suffix = numericMatch[2];
-      return (
-        <motion.div
-          className="flex items-baseline gap-0.5"
-          initial={{ opacity: 0, y: 10 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-        >
-          <span className="font-display text-lg sm:text-xl font-bold text-emerald-400">R</span>
-          <CountUp
-            end={numVal}
-            duration={2}
-            className="font-display text-2xl sm:text-3xl font-bold text-emerald-300"
-          />
-          <span className="font-body text-sm font-medium text-emerald-400/80">{suffix}</span>
-        </motion.div>
-      );
-    }
-  }
-
-  return (
-    <motion.p
-      className={`font-body text-sm font-semibold ${type === "before" ? "text-red-400" : "text-emerald-400"}`}
-      initial={{ opacity: 0, y: 8 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
-      transition={{ duration: 0.5, delay: 0.5 }}
-    >
-      {amount}
-    </motion.p>
-  );
-}
-
-/* ─── Comparison Card ──────────────────────────────────────────── */
-
-function ComparisonCardComponent({
-  card,
+function CaseStudyCard({
+  study,
   index,
 }: {
-  card: ComparisonCard;
+  study: CaseStudy;
   index: number;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(cardRef, { once: true, margin: "-60px" });
-  const [hoveredSide, setHoveredSide] = useState<"before" | "after" | null>(null);
-  const CardIcon = card.icon;
+  const isInView = useInView(cardRef, { once: true, margin: "-40px" });
+  const [showDetails, setShowDetails] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+  const Icon = study.icon;
+
+  const severityColors = {
+    Critical: { bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)", text: "#EF4444" },
+    Extreme: { bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)", text: "#F59E0B" },
+    High: { bg: "rgba(251,146,60,0.08)", border: "rgba(251,146,60,0.2)", text: "#FB923C" },
+  };
+
+  const sev = severityColors[study.severity];
 
   return (
     <motion.div
       ref={cardRef}
-      className="group relative card-hover-lift"
-      variants={staggerChildVariants}
-      onMouseEnter={() => setHoveredSide(null)}
+      variants={cardReveal}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ delay: index * 0.15 }}
+      className="group relative"
     >
-      {/* Gradient border wrapper */}
-      <div className="card-gradient-border">
-        <div className="relative overflow-hidden rounded-xl bg-brand-dark">
-          {/* Diagonal split overlay */}
-          <div className="absolute inset-0 z-0 pointer-events-none">
-            {/* Dark diagonal background base */}
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-dark via-brand-navy to-brand-dark" />
-            {/* Red-tinted before zone (top-left) */}
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-br from-red-950/50 via-red-900/20 to-transparent"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-              transition={{ duration: 1, delay: 0.2 + index * 0.1 }}
-            />
-            {/* Emerald-tinted after zone (bottom-right) */}
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-tl from-emerald-950/40 via-transparent to-transparent"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-              transition={{ duration: 1, delay: 0.4 + index * 0.1 }}
-            />
-            {/* Diagonal split line */}
-            <motion.div
-              className="absolute inset-0 z-10 pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-              transition={{ duration: 1.2, delay: 0.5 + index * 0.1 }}
-            >
-              <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 400 600">
-                <defs>
-                  <linearGradient id={`split-gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="rgba(198,168,75,0.05)" />
-                    <stop offset="40%" stopColor="rgba(198,168,75,0.6)" />
-                    <stop offset="60%" stopColor="rgba(198,168,75,0.6)" />
-                    <stop offset="100%" stopColor="rgba(198,168,75,0.05)" />
-                  </linearGradient>
-                  <filter id={`glow-${index}`}>
-                    <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                    <feMerge>
-                      <feMergeNode in="coloredBlur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-                <line
-                  x1="0"
-                  y1="0"
-                  x2="400"
-                  y2="600"
-                  stroke={`url(#split-gradient-${index})`}
-                  strokeWidth="2"
-                  filter={`url(#glow-${index})`}
-                />
-              </svg>
-            </motion.div>
-          </div>
-
-          {/* Content layer */}
-          <div className="relative z-10">
-            {/* Card Header */}
-            <motion.div
-              className="p-5 pb-3 border-b border-white/5"
-              initial={{ opacity: 0, y: -10 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center">
-                    <CardIcon className="h-4 w-4 text-brand-gold" strokeWidth={1.8} />
-                  </div>
-                  <span className="font-body text-[11px] font-semibold uppercase tracking-widest text-brand-gold/70">
-                    {card.practiceArea}
-                  </span>
-                </div>
-                <span className="font-body text-[11px] font-medium text-white/30 flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  {card.duration}
-                </span>
-              </div>
-              <SeverityMeter
-                severity={card.severity}
-                label={card.severityLabel}
-                isInView={isInView}
-              />
-            </motion.div>
-
-            {/* Before Section */}
-            <motion.div
-              className="p-5 pb-4 relative"
-              onMouseEnter={() => setHoveredSide("before")}
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              {/* Hover glow effect */}
-              <motion.div
-                className="absolute inset-0 bg-red-900/15 rounded-lg pointer-events-none"
-                animate={{
-                  opacity: hoveredSide === "before" ? 1 : 0,
+      <div
+        className="relative overflow-hidden rounded-xl"
+        style={{
+          background: "rgba(255,255,255,0.02)",
+          border: "1px solid rgba(198,168,75,0.1)",
+        }}
+      >
+        {/* ── Header ── */}
+        <div className="px-6 pt-6 pb-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{
+                  background: "rgba(198,168,75,0.08)",
+                  border: "1px solid rgba(198,168,75,0.15)",
                 }}
-                transition={{ duration: 0.3 }}
-              />
-              <div className="relative">
-                <div className="flex items-start gap-2.5 mb-2.5">
-                  <motion.div
-                    className="mt-0.5 flex-shrink-0 w-7 h-7 rounded-lg bg-red-900/40 border border-red-800/40 flex items-center justify-center"
-                    animate={
-                      hoveredSide === "before"
-                        ? { scale: [1, 1.1, 1] }
-                        : {}
-                    }
-                    transition={{ duration: 0.3 }}
-                  >
-                    <AlertTriangle className="h-3.5 w-3.5 text-red-400" strokeWidth={2} />
-                  </motion.div>
-                  <h4 className="font-display text-base sm:text-lg font-semibold text-red-400 leading-tight">
-                    {card.before.heading}
-                  </h4>
-                </div>
-                <p className="font-body text-sm leading-relaxed text-red-300/70 mb-3">
-                  {card.before.description}
-                </p>
-                <AnimatedAmount amount={card.before.amount} isInView={isInView} type="before" />
+              >
+                <Icon className="w-5 h-5 text-brand-gold" strokeWidth={1.5} />
               </div>
-            </motion.div>
-
-            {/* Gold Arrow Divider */}
-            <div className="px-5">
-              <GoldArrowDivider />
+              <div>
+                <p className="font-body text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-gold/60">
+                  {study.practiceArea}
+                </p>
+                <p className="font-body text-[10px] text-white/30">{study.clientType}</p>
+              </div>
             </div>
-
-            {/* After Section */}
-            <motion.div
-              className="p-5 pt-4 relative"
-              onMouseEnter={() => setHoveredSide("after")}
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-            >
-              {/* Hover glow effect */}
-              <motion.div
-                className="absolute inset-0 bg-emerald-900/15 rounded-lg pointer-events-none"
-                animate={{
-                  opacity: hoveredSide === "after" ? 1 : 0,
-                }}
-                transition={{ duration: 0.3 }}
-              />
-              <div className="relative">
-                <div className="flex items-start gap-2.5 mb-2.5">
-                  <motion.div
-                    className="mt-0.5 flex-shrink-0 w-7 h-7 rounded-lg bg-emerald-900/40 border border-emerald-700/30 flex items-center justify-center"
-                    animate={
-                      hoveredSide === "after"
-                        ? { scale: [1, 1.1, 1] }
-                        : {}
-                    }
-                    transition={{ duration: 0.3 }}
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" strokeWidth={2} />
-                  </motion.div>
-                  <h4 className="font-display text-base sm:text-lg font-semibold text-emerald-400 leading-tight">
-                    {card.after.heading}
-                  </h4>
-                </div>
-                <p className="font-body text-sm leading-relaxed text-emerald-300/70 mb-3">
-                  {card.after.description}
-                </p>
-                <AnimatedAmount amount={card.after.amount} isInView={isInView} type="after" />
-              </div>
-            </motion.div>
+            <div className="flex items-center gap-2">
+              <span
+                className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider"
+                style={{ background: sev.bg, border: `1px solid ${sev.border}`, color: sev.text }}
+              >
+                {study.severity}
+              </span>
+              <span className="font-body text-[10px] text-white/25 flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {study.duration}
+              </span>
+            </div>
           </div>
 
-          {/* Corner accents */}
-          <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-brand-gold/20 rounded-tl-xl pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-brand-gold/20 rounded-br-xl pointer-events-none" />
+          {/* Case number */}
+          <div className="flex items-center gap-3">
+            <span className="font-display text-5xl sm:text-6xl font-black" style={{
+              color: "rgba(198,168,75,0.06)",
+            }}>
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <div className="flex-1 h-px" style={{
+              background: "linear-gradient(90deg, rgba(198,168,75,0.15), transparent)",
+            }} />
+          </div>
         </div>
+
+        {/* ── BEFORE Section ── */}
+        <div className="px-6 pb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-6 h-6 rounded-md flex items-center justify-center bg-red-500/10 border border-red-500/20">
+              <AlertTriangle className="w-3 h-3 text-red-400" strokeWidth={2} />
+            </div>
+            <h3 className="font-display text-base sm:text-lg font-bold text-red-300">
+              {study.before.title}
+            </h3>
+          </div>
+          <p className="font-body text-xs sm:text-sm leading-relaxed text-white/45 mb-4">
+            {study.before.description}
+          </p>
+          <ul className="space-y-2">
+            {study.before.highlights.map((h, i) => (
+              <motion.li
+                key={i}
+                className="flex items-start gap-2.5"
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 + i * 0.08 }}
+              >
+                <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-red-400/60 mt-1.5" />
+                <span className="font-body text-xs text-white/35 leading-relaxed">{h}</span>
+              </motion.li>
+            ))}
+          </ul>
+        </div>
+
+        {/* ── Transformation divider ── */}
+        <div className="px-6 py-3">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/25 to-transparent" />
+            <motion.div
+              className="relative z-10 w-10 h-10 rounded-full flex items-center justify-center"
+              style={{
+                background: "linear-gradient(135deg, #C6A84B, #E4D49A)",
+                boxShadow: "0 0 20px rgba(198,168,75,0.3)",
+              }}
+              animate={{
+                boxShadow: [
+                  "0 0 20px rgba(198,168,75,0.3)",
+                  "0 0 35px rgba(198,168,75,0.5)",
+                  "0 0 20px rgba(198,168,75,0.3)",
+                ],
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <ChevronRight className="w-4 h-4 text-brand-dark" strokeWidth={2.5} />
+            </motion.div>
+          </div>
+        </div>
+
+        {/* ── AFTER Section ── */}
+        <div className="px-6 pb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-6 h-6 rounded-md flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20">
+              <CheckCircle2 className="w-3 h-3 text-emerald-400" strokeWidth={2} />
+            </div>
+            <h3 className="font-display text-base sm:text-lg font-bold text-emerald-300">
+              {study.after.title}
+            </h3>
+          </div>
+
+          {/* Result badge */}
+          <motion.div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg mb-4"
+            style={{
+              background: "linear-gradient(135deg, rgba(198,168,75,0.1), rgba(198,168,75,0.04))",
+              border: "1px solid rgba(198,168,75,0.2)",
+            }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <Trophy className="w-4 h-4 text-brand-gold" strokeWidth={1.5} />
+            <span className="font-display text-lg sm:text-xl font-bold text-gold-gradient">
+              {study.after.resultValue !== "0" && (
+                <CountUp
+                  end={parseInt(study.after.resultValue)}
+                  prefix="R"
+                  duration={2.5}
+                  className="font-display text-lg sm:text-xl font-bold"
+                />
+              )}
+              {study.after.resultValue === "0" && study.after.result}
+            </span>
+          </motion.div>
+
+          <p className="font-body text-xs sm:text-sm leading-relaxed text-white/45 mb-4">
+            {study.after.description}
+          </p>
+          <ul className="space-y-2">
+            {study.after.highlights.map((h, i) => (
+              <motion.li
+                key={i}
+                className="flex items-start gap-2.5"
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 + i * 0.08 }}
+              >
+                <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-emerald-400/60 mt-1.5" />
+                <span className="font-body text-xs text-white/35 leading-relaxed">{h}</span>
+              </motion.li>
+            ))}
+          </ul>
+        </div>
+
+        {/* ── Testimonial toggle ── */}
+        <div className="px-6 pb-6">
+          <button
+            onClick={() => setShowDetails(!showDetails)}
+            className="w-full flex items-center justify-between py-3 rounded-lg transition-all duration-300"
+            style={{
+              background: showDetails ? "rgba(198,168,75,0.05)" : "rgba(255,255,255,0.02)",
+              border: `1px solid ${showDetails ? "rgba(198,168,75,0.15)" : "rgba(255,255,255,0.04)"}`,
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <Quote className="w-3.5 h-3.5 text-brand-gold/50" />
+              <span className="font-body text-xs font-medium text-white/40">Client Testimonial</span>
+            </div>
+            {showDetails ? (
+              <EyeOff className="w-3.5 h-3.5 text-white/30" />
+            ) : (
+              <Eye className="w-3.5 h-3.5 text-white/30" />
+            )}
+          </button>
+
+          <AnimatePresence>
+            {showDetails && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.4 }}
+                className="overflow-hidden"
+              >
+                <div
+                  className="mt-3 p-4 rounded-lg"
+                  style={{
+                    background: "rgba(198,168,75,0.03)",
+                    borderLeft: "2px solid rgba(198,168,75,0.3)",
+                  }}
+                >
+                  <p className="font-display text-sm italic leading-relaxed" style={{ color: "rgba(228,212,154,0.7)" }}>
+                    {study.testimonial}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* ── Gold corner accents ── */}
+        <div className="absolute top-0 left-0 w-6 h-6 border-t border-l border-brand-gold/15 rounded-tl-xl pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-6 h-6 border-b border-r border-brand-gold/15 rounded-br-xl pointer-events-none" />
       </div>
     </motion.div>
   );
 }
 
-/* ─── Trust Indicator Card ─────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   STAT CARD
+   ══════════════════════════════════════════════════════════════════════ */
 
-function TrustIndicator({
-  indicator,
+function StatCard({
+  stat,
   index,
 }: {
-  indicator: (typeof trustIndicators)[number];
+  stat: (typeof firmStats)[number];
   index: number;
 }) {
-  const Icon = indicator.icon;
+  const Icon = stat.icon;
   return (
     <motion.div
-      className="relative flex flex-col items-center text-center p-5 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm"
+      className="group relative text-center p-5 sm:p-6 rounded-xl overflow-hidden transition-all duration-500 hover:-translate-y-1"
+      style={{
+        background: "rgba(198,168,75,0.03)",
+        border: "1px solid rgba(198,168,75,0.08)",
+      }}
       variants={staggerChildVariants}
       whileHover={{
-        borderColor: "rgba(198, 168, 75, 0.3)",
-        backgroundColor: "rgba(198, 168, 75, 0.05)",
+        borderColor: "rgba(198,168,75,0.25)",
+        background: "rgba(198,168,75,0.06)",
       }}
-      transition={{ duration: 0.3 }}
     >
-      {/* Icon */}
-      <motion.div
-        className="w-10 h-10 rounded-lg bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center mb-3"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.2 + index * 0.1 }}
-      >
-        <Icon className="h-5 w-5 text-brand-gold" strokeWidth={1.8} />
-      </motion.div>
+      {/* Hover glow */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at center, rgba(198,168,75,0.06) 0%, transparent 70%)" }}
+      />
 
-      {/* Value */}
-      <div className="flex items-baseline gap-0.5 mb-1">
-        {indicator.prefix && (
-          <span className="font-display text-lg font-semibold text-brand-gold/60">
-            {indicator.prefix}
-          </span>
-        )}
-        <CountUp
-          end={indicator.value}
-          duration={2.5}
-          className="font-display text-3xl sm:text-4xl font-bold text-gold-gradient"
-        />
-        <span className="font-display text-lg font-semibold text-brand-gold/60">
-          {indicator.suffix}
+      <div className="relative z-10">
+        <Icon className="w-5 h-5 text-brand-gold/40 mx-auto mb-3" strokeWidth={1.5} />
+        <div className="flex items-baseline justify-center gap-0.5 mb-1">
+          {stat.prefix && (
+            <span className="font-display text-lg font-bold text-brand-gold/50">{stat.prefix}</span>
+          )}
+          <CountUp
+            end={stat.value}
+            duration={2.5}
+            suffix={stat.suffix}
+            className="font-display text-3xl sm:text-4xl font-bold text-gold-gradient"
+          />
+        </div>
+        <span className="font-body text-[10px] sm:text-xs text-white/30 uppercase tracking-[0.15em]">
+          {stat.label}
         </span>
       </div>
-
-      {/* Label */}
-      <span className="font-body text-xs font-medium text-white/40 uppercase tracking-wider">
-        {indicator.label}
-      </span>
     </motion.div>
   );
 }
 
-/* ─── Ornamental Divider ───────────────────────────────────────── */
-
-function OrnamentalDivider({ className = "" }: { className?: string }) {
-  return (
-    <div className={`flex items-center justify-center gap-3 ${className}`}>
-      <span className="block h-px w-10 bg-gradient-to-r from-transparent to-brand-gold/40" />
-      <span className="block h-1.5 w-1.5 rotate-45 bg-brand-gold/50" />
-      <span className="block h-0.5 w-14 bg-gradient-to-r from-brand-gold/15 via-brand-gold/60 to-brand-gold/15" />
-      <span className="block h-1.5 w-1.5 rotate-45 bg-brand-gold/50" />
-      <span className="block h-px w-10 bg-gradient-to-l from-transparent to-brand-gold/40" />
-    </div>
-  );
-}
-
-/* ─── Floating Particles ───────────────────────────────────────── */
-
-function FloatingParticles() {
-  return (
-    <div className="particles-container" aria-hidden="true">
-      {Array.from({ length: 12 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="particle"
-          style={{
-            left: `${8 + (i * 7.5) % 85}%`,
-            animationDuration: `${12 + (i * 3) % 15}s`,
-            animationDelay: `${(i * 1.5) % 8}s`,
-            width: `${2 + (i % 3)}px`,
-            height: `${2 + (i % 3)}px`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-/* ─── Main Component ───────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   MAIN COMPONENT
+   ══════════════════════════════════════════════════════════════════════ */
 
 export function BeforeAfterSlider() {
-  const scrollToContact = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const el = document.querySelector("#contact");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  };
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-60px" });
 
   return (
     <section
+      ref={sectionRef}
       id="before-after"
-      className="relative w-full overflow-hidden bg-brand-dark noise-overlay"
-      aria-label="Case Transformation Theatre — Before and After"
+      className="relative w-full overflow-hidden"
+      style={{ backgroundColor: "#0A1222" }}
+      aria-label="Case Transformation Theatre"
     >
-      {/* Top gold accent line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/40 to-transparent z-10" />
+      {/* ── Background atmosphere ── */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-0 left-0 w-[600px] h-[600px] pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at center, rgba(198,168,75,0.04) 0%, transparent 60%)" }}
+        />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at center, rgba(198,168,75,0.03) 0%, transparent 60%)" }}
+        />
+        <div className="absolute inset-0 noise-overlay opacity-[0.02]" />
+        <div className="absolute inset-0 bg-crosshatch pointer-events-none opacity-30" />
+      </div>
 
-      {/* Background layers */}
-      <div className="absolute inset-0 bg-crosshatch pointer-events-none" />
-      <div className="absolute inset-0 bg-radial-glow pointer-events-none" />
-      <FloatingParticles />
-
-      {/* Large section number watermark */}
-      <span className="section-number" aria-hidden="true">
-        04
-      </span>
-
-      {/* Ambient side glows */}
-      <div
-        className="absolute top-0 left-0 w-96 h-full pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse at 0% 50%, rgba(153, 27, 27, 0.06) 0%, transparent 60%)",
-        }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute top-0 right-0 w-96 h-full pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse at 100% 50%, rgba(6, 78, 59, 0.06) 0%, transparent 60%)",
-        }}
-        aria-hidden="true"
+      {/* ── Top separator ── */}
+      <motion.div
+        className="absolute top-0 left-0 right-0 h-px z-10"
+        style={{ background: "linear-gradient(90deg, transparent 0%, rgba(198,168,75,0.3) 30%, rgba(198,168,75,0.5) 50%, rgba(198,168,75,0.3) 70%, transparent 100%)" }}
+        initial={{ scaleX: 0 }}
+        animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+        transition={{ duration: 1, delay: 0.2 }}
       />
 
-      {/* ─── Content ────────────────────────────────────────────── */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-32">
-        {/* Section Header */}
-        <ScrollReveal className="text-center mb-16 sm:mb-20 lg:mb-24">
-          <div className="flex flex-col items-center">
-            <span className="label-premium mb-4 block">Case Transformation Theatre</span>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36">
+        {/* ═══════ Section Header ═══════ */}
+        <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
+          <motion.span
+            className="font-body text-[11px] sm:text-xs uppercase tracking-[0.3em] text-brand-gold/80 mb-5 block"
+            variants={fadeUp}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            custom={0.1}
+          >
+            Case Transformation Theatre
+          </motion.span>
 
-            {/* Gold line */}
-            <div className="mb-6">
-              <GoldLine width={60} />
-            </div>
+          <motion.div
+            className="h-px bg-gradient-to-r from-transparent via-brand-gold/60 to-transparent mx-auto mb-8 max-w-[120px]"
+            initial={{ scaleX: 0 }}
+            animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          />
 
-            {/* Main heading */}
-            <h2 className="heading-section">
-              Real Results, Real Impact
-            </h2>
+          <motion.h2
+            className="heading-section mb-6"
+            variants={fadeUp}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            custom={0.3}
+          >
+            Real Cases. Real Impact.
+          </motion.h2>
 
-            <OrnamentalDivider className="mb-5" />
+          <motion.p
+            className="font-body text-base sm:text-lg text-white/45 max-w-2xl mx-auto leading-relaxed"
+            variants={fadeUp}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            custom={0.45}
+          >
+            Every case tells a story of resilience, strategy, and unwavering commitment. Witness how we transform seemingly impossible legal battles into life-changing victories.
+          </motion.p>
+        </div>
 
-            <p className="subheading-premium-dark">
-              Witness the transformation. These side-by-side comparisons reveal how our strategic intervention turns daunting legal battles into powerful success stories.
-            </p>
-          </div>
-        </ScrollReveal>
-
-        {/* Comparison Cards Grid */}
-        <StaggerContainer
-          className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-7"
-          staggerDelay={0.15}
-        >
-          {comparisonCards.map((card, i) => (
-            <ComparisonCardComponent key={card.title} card={card} index={i} />
+        {/* ═══════ Case Studies Grid ═══════ */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-7 mb-16 sm:mb-20">
+          {caseStudies.map((study, i) => (
+            <CaseStudyCard key={study.id} study={study} index={i} />
           ))}
-        </StaggerContainer>
+        </div>
 
-        {/* ─── Trust Indicators ─────────────────────────────────── */}
-        <div className="mt-16 sm:mt-20 lg:mt-24">
-          {/* Divider */}
-          <ScrollReveal>
-            <div className="h-px bg-gradient-to-r from-transparent via-brand-gold/20 to-transparent mb-12 sm:mb-16" />
-          </ScrollReveal>
-
-          <ScrollReveal className="text-center mb-8 sm:mb-10">
-            <h3 className="font-display text-xl sm:text-2xl font-bold text-white/80 mb-2">
-              Our Track Record Speaks
-            </h3>
-            <p className="font-body text-sm text-white/30">
-              Numbers that reflect our commitment to justice
-            </p>
-          </ScrollReveal>
+        {/* ═══════ Trust Indicators ═══════ */}
+        <div>
+          <motion.div
+            className="h-px mx-auto max-w-xs mb-12 sm:mb-14"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(198,168,75,0.25), transparent)" }}
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          />
 
           <StaggerContainer
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5"
             staggerDelay={0.1}
           >
-            {trustIndicators.map((indicator, i) => (
-              <TrustIndicator key={indicator.label} indicator={indicator} index={i} />
+            {firmStats.map((stat, i) => (
+              <StatCard key={stat.label} stat={stat} index={i} />
             ))}
           </StaggerContainer>
         </div>
 
-        {/* ─── CTA Section ──────────────────────────────────────── */}
-        <ScrollReveal className="mt-16 sm:mt-20 lg:mt-24">
-          <div className="flex flex-col items-center text-center gap-6">
-            {/* CTA text */}
-            <div className="max-w-lg">
-              <p className="font-display text-xl sm:text-2xl font-bold text-white/80 mb-2">
-                Your transformation starts here.
-              </p>
-              <p className="font-body text-sm sm:text-base text-white/35 leading-relaxed">
-                Every case is unique. Let us discuss your situation and chart a path
-                to the outcome you deserve.
-              </p>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-              <a
-                href="#contact"
-                className="btn-premium"
-                onClick={scrollToContact}
-              >
-                <span>Request a Free Consultation</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
-              <a
-                href="#contact"
-                className="btn-premium-outline"
-                onClick={scrollToContact}
-              >
-                <span>View All Case Results</span>
-              </a>
-            </div>
-          </div>
-        </ScrollReveal>
+        {/* ═══════ CTA ═══════ */}
+        <motion.div
+          className="mt-14 sm:mt-16 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+        >
+          <p className="font-display text-lg sm:text-xl font-bold text-white/70 mb-3">
+            Your case could be next.
+          </p>
+          <p className="font-body text-sm text-white/35 mb-8 max-w-md mx-auto">
+            Don&apos;t let another day pass without the legal representation you deserve.
+          </p>
+          <a
+            href="#contact"
+            onClick={(e) => {
+              e.preventDefault();
+              const el = document.querySelector("#contact");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="btn-premium inline-flex items-center gap-2 px-8 py-3.5 font-body text-sm rounded-md"
+          >
+            <Sparkles className="w-4 h-4" />
+            Request a Free Consultation
+            <ArrowRight className="w-4 h-4" />
+          </a>
+        </motion.div>
       </div>
 
-      {/* Bottom wave divider */}
-      <div className="wave-divider-bottom" aria-hidden="true" />
+      {/* ── Bottom separator ── */}
+      <div className="absolute bottom-0 left-0 right-0 h-px z-10"
+        style={{ background: "linear-gradient(90deg, transparent 0%, rgba(198,168,75,0.3) 30%, rgba(198,168,75,0.5) 50%, rgba(198,168,75,0.3) 70%, transparent 100%)" }}
+      />
     </section>
   );
 }

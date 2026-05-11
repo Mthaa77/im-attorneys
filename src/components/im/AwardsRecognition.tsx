@@ -11,693 +11,532 @@ import {
   Shield,
   ChevronLeft,
   ChevronRight,
+  Sparkles,
+  Quote,
+  ExternalLink,
 } from "lucide-react";
 import {
   ScrollReveal,
   GoldLine,
 } from "@/components/im/ScrollReveal";
 
-/* ─── Data ──────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   DATA
+   ══════════════════════════════════════════════════════════════════════ */
 
-interface AwardData {
+interface AwardItem {
   title: string;
-  org: string;
+  organisation: string;
   year: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ElementType;
+  description: string;
+  featured?: boolean;
 }
 
-const awards: AwardData[] = [
+const awards: AwardItem[] = [
   {
     title: "Top 100 Lawyers in South Africa",
-    org: "Mail & Guardian",
+    organisation: "Mail & Guardian",
     year: "2024",
     icon: Trophy,
+    description: "Recognised among the nation's most influential legal practitioners for outstanding contribution to access to justice and client advocacy.",
+    featured: true,
   },
   {
-    title: "Best Boutique Law Firm",
-    org: "Legal 500 Africa",
-    year: "2023",
+    title: "Best Boutique Law Firm — Pretoria",
+    organisation: "Legal 500 Africa",
+    year: "2024",
     icon: Award,
+    description: "Acknowledged as the leading boutique law firm in the Pretoria region for exceptional client service and legal outcomes.",
+    featured: false,
   },
   {
-    title: "Excellence in Family Law",
-    org: "SACLP Awards",
+    title: "Excellence in Family Law Practice",
+    organisation: "SACLP Awards",
     year: "2024",
     icon: Star,
+    description: "Awarded for demonstrating the highest standards of legal excellence and client-centred approach in family law matters.",
+    featured: false,
   },
   {
     title: "Rising Star in Legal Practice",
-    org: "Lawyer of the Year",
+    organisation: "Lawyer of the Year Awards",
     year: "2023",
     icon: Crown,
+    description: "Celebrating the rapid rise of Ingrid Mtsweni as one of South Africa's most promising legal professionals.",
+    featured: true,
   },
   {
     title: "BBBEE Level 1 Contributor",
-    org: "SANAS Certified",
+    organisation: "SANAS Certified",
     year: "2024",
     icon: Shield,
+    description: "Achieving the highest level of broad-based black economic empowerment certification, demonstrating our commitment to economic transformation.",
+    featured: false,
   },
   {
-    title: "Client Choice Award",
-    org: "LexisNexis SA",
+    title: "Client Choice Award — Excellence",
+    organisation: "LexisNexis South Africa",
     year: "2023",
     icon: Medal,
+    description: "Voted by clients as the firm that best delivers on promises, exceeding expectations in communication, outcomes, and overall experience.",
+    featured: false,
   },
+];
+
+const credentials = [
+  { label: "LLB — University of Johannesburg", year: "2018" },
+  { label: "Admitted Attorney — High Court of South Africa", year: "2019" },
+  { label: "Founded IM Attorneys Inc", year: "2023" },
+  { label: "BBBEE Level 1 Certified", year: "2024" },
 ];
 
 const mediaOutlets = [
   "Mail & Guardian",
-  "Legal 500",
+  "Legal 500 Africa",
   "SACLP",
-  "LexisNexis",
+  "LexisNexis SA",
   "Sunday Times",
+  "Business Day",
 ];
 
-/* ─── Hex Badge Component ───────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════════════════════════════════ */
 
-interface HexBadgeProps {
-  award: AwardData;
-  index: number;
-  isActive: boolean;
-  onHoverStart: (idx: number) => void;
-  onHoverEnd: () => void;
-}
+const fadeUp = {
+  hidden: { opacity: 0, y: 25 },
+  visible: (d: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, delay: d, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
 
-function HexBadge({ award, index, isActive, onHoverStart, onHoverEnd }: HexBadgeProps) {
+/* ══════════════════════════════════════════════════════════════════════
+   FEATURED AWARD CARD
+   ══════════════════════════════════════════════════════════════════════ */
+
+function FeaturedAwardCard({ award }: { award: AwardItem }) {
   const Icon = award.icon;
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
-
-  // Different float timing per badge
-  const floatDuration = 4 + index * 0.7;
-  const floatDelay = index * -1.2;
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -8;
-      const rotateY = ((x - centerX) / centerX) * 8;
-      setTilt({ rotateX, rotateY });
-    },
-    []
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    setTilt({ rotateX: 0, rotateY: 0 });
-    onHoverEnd();
-  }, [onHoverEnd]);
-
   return (
     <motion.div
-      className="relative flex items-center justify-center"
+      className="relative overflow-hidden rounded-xl"
       style={{
-        perspective: "600px",
-        animation: `hexFloat ${floatDuration}s ease-in-out ${floatDelay}s infinite`,
+        background: "linear-gradient(145deg, rgba(198,168,75,0.08), rgba(198,168,75,0.02))",
+        border: "1px solid rgba(198,168,75,0.15)",
+        boxShadow: "0 0 50px rgba(198,168,75,0.06)",
       }}
-      initial={{ opacity: 0, y: 40, scale: 0.85 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.7, delay: index * 0.1, ease: "easeOut" }}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7 }}
     >
-      {/* Hex container with 3D tilt */}
-      <motion.div
-        className="relative cursor-default"
+      {/* Shimmer top bar */}
+      <div className="h-1 w-full"
         style={{
-          transformStyle: "preserve-3d",
+          background: "linear-gradient(90deg, #8B6914, #C6A84B, #F5E6B8, #E4D49A, #C6A84B, #8B6914)",
+          backgroundSize: "200% 100%",
+          animation: "goldGlossyShimmer 5s ease-in-out infinite",
         }}
-        animate={{
-          rotateX: tilt.rotateX,
-          rotateY: tilt.rotateY,
-          scale: isActive ? 1.15 : 1,
-        }}
-        transition={{ type: "spring", stiffness: 250, damping: 20 }}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => onHoverStart(index)}
-        onMouseLeave={handleMouseLeave}
-      >
-        {/* Hex clip-path shape */}
-        <div
-          className="relative w-48 h-52 sm:w-56 sm:h-60 md:w-64 md:h-68 lg:w-72 lg:h-80"
-          style={{
-            clipPath:
-              "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-          }}
-        >
-          {/* Glass background */}
-          <div
-            className="absolute inset-0 transition-all duration-500"
-            style={{
-              background: isActive
-                ? "rgba(198,168,75,0.12)"
-                : "rgba(198,168,75,0.04)",
-              backdropFilter: "blur(16px)",
-              WebkitBackdropFilter: "blur(16px)",
-              boxShadow: isActive
-                ? "0 0 60px rgba(198,168,75,0.25), inset 0 0 40px rgba(198,168,75,0.08)"
-                : "0 0 30px rgba(198,168,75,0.08), inset 0 0 20px rgba(198,168,75,0.03)",
-            }}
-          />
+      />
 
-          {/* Animated border shimmer */}
+      <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-start gap-6">
+        {/* Icon */}
+        <div className="flex-shrink-0">
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="w-16 h-16 rounded-xl flex items-center justify-center"
             style={{
-              clipPath:
-                "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-              background: `conic-gradient(from ${isActive ? "0deg" : "180deg"}, transparent 0%, #C6A84B ${isActive ? "20%" : "10%"}, transparent ${isActive ? "40%" : "20%"}, #E4D49A ${isActive ? "60%" : "50%"}, transparent ${isActive ? "80%" : "70%"}, #C6A84B 100%)`,
-              mask: "radial-gradient(farthest-side, transparent calc(100% - 1.5px), black calc(100% - 1.5px))",
-              WebkitMask:
-                "radial-gradient(farthest-side, transparent calc(100% - 1.5px), black calc(100% - 1.5px))",
-              opacity: isActive ? 0.8 : 0.3,
-              transition: "opacity 0.5s ease",
-              animation: `spin 6s linear infinite`,
+              background: "linear-gradient(135deg, rgba(198,168,75,0.15), rgba(198,168,75,0.06))",
+              border: "1.5px solid rgba(198,168,75,0.25)",
+              boxShadow: "0 0 24px rgba(198,168,75,0.15)",
             }}
-          />
+          >
+            <Icon className="w-8 h-8 text-brand-gold" strokeWidth={1.5} />
+          </div>
         </div>
 
-        {/* Content (outside clip-path for proper rendering) */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-4">
-          {/* Icon */}
-          <div className="mb-3 sm:mb-4">
-            <div
-              className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 flex items-center justify-center rounded-full transition-all duration-500"
-              style={{
-                background: isActive
-                  ? "rgba(198,168,75,0.15)"
-                  : "rgba(198,168,75,0.08)",
-                boxShadow: isActive
-                  ? "0 0 30px rgba(198,168,75,0.3)"
-                  : "0 0 10px rgba(198,168,75,0.1)",
-              }}
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2 flex-wrap">
+            <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider"
+              style={{ background: "rgba(198,168,75,0.12)", color: "#E4D49A", border: "1px solid rgba(198,168,75,0.2)" }}
             >
-              <Icon
-                className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-brand-gold"
-                strokeWidth={1.5}
-              />
-            </div>
+              Featured
+            </span>
+            <span className="font-body text-[10px] text-white/30 uppercase tracking-wider">{award.year}</span>
           </div>
 
-          {/* Title */}
-          <h3
-            className="font-display text-sm sm:text-base lg:text-lg font-semibold text-white text-center leading-tight mb-1 sm:mb-2 transition-all duration-500"
-            style={{
-              opacity: isActive ? 1 : 0.85,
-              textShadow: isActive
-                ? "0 0 20px rgba(198,168,75,0.4)"
-                : "none",
-            }}
-          >
+          <h3 className="font-display text-xl sm:text-2xl font-bold text-white/90 mb-2">
             {award.title}
           </h3>
-
-          {/* Organization */}
-          <p
-            className="font-body text-xs sm:text-sm text-white/50 text-center mb-1 sm:mb-2 transition-all duration-500"
-            style={{
-              opacity: isActive ? 1 : 0.7,
-            }}
-          >
-            {award.org}
+          <p className="font-body text-sm font-medium text-brand-gold/70 mb-3">
+            {award.organisation}
           </p>
-
-          {/* Year badge */}
-          <span
-            className="font-body text-xs font-semibold tracking-[0.2em] uppercase text-brand-gold/80 bg-brand-gold/10 px-3 py-1 rounded-full transition-all duration-500"
-            style={{
-              opacity: isActive ? 1 : 0.7,
-              boxShadow: isActive
-                ? "0 0 15px rgba(198,168,75,0.2)"
-                : "none",
-            }}
-          >
-            {award.year}
-          </span>
-
-          {/* Extra detail on hover */}
-          <AnimatePresence>
-            {isActive && (
-              <motion.p
-                className="font-body text-[11px] text-brand-gold/50 text-center mt-2 max-w-[160px] lg:max-w-[200px]"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                Recognized for outstanding legal excellence and client service
-              </motion.p>
-            )}
-          </AnimatePresence>
+          <p className="font-body text-sm leading-relaxed text-white/40">
+            {award.description}
+          </p>
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
 
-/* ─── Featured Marquee ──────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   AWARD CARD (standard)
+   ══════════════════════════════════════════════════════════════════════ */
 
-function FeaturedMarquee() {
-  const items = [...mediaOutlets, ...mediaOutlets];
+function AwardCard({ award, index }: { award: AwardItem; index: number }) {
+  const Icon = award.icon;
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="marquee-container w-full py-5">
-      <div className="marquee-content">
-        {items.map((outlet, index) => (
-          <span
-            key={`${outlet}-${index}`}
-            className="inline-flex items-center gap-6 sm:gap-8 font-body text-xs sm:text-sm tracking-[0.3em] uppercase select-none"
-            style={{ color: "rgba(198, 168, 75, 0.4)" }}
+    <motion.div
+      className="group relative overflow-hidden rounded-xl transition-all duration-500 hover:-translate-y-1 cursor-default"
+      style={{
+        background: "rgba(255,255,255,0.015)",
+        border: "1px solid rgba(198,168,75,0.07)",
+      }}
+      initial={{ opacity: 0, y: 25 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1, duration: 0.6 }}
+      whileHover={{
+        borderColor: "rgba(198,168,75,0.2)",
+        background: "rgba(255,255,255,0.025)",
+      }}
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
+      {/* Hover spotlight */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(198,168,75,0.04) 0%, transparent 60%)" }}
+      />
+
+      <div className="relative z-10 p-5 sm:p-6">
+        <div className="flex items-start gap-4">
+          <div
+            className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300"
+            style={{
+              background: "rgba(198,168,75,0.06)",
+              border: "1px solid rgba(198,168,75,0.1)",
+            }}
           >
-            {outlet}
+            <Icon className="w-5 h-5 text-brand-gold/70" strokeWidth={1.5} />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <h4 className="font-display text-base font-bold text-white/85 mb-1 group-hover:text-brand-gold/90 transition-colors duration-300">
+              {award.title}
+            </h4>
+            <div className="flex items-center gap-2">
+              <p className="font-body text-xs text-brand-gold/50">{award.organisation}</p>
+              <span className="text-white/15">&middot;</span>
+              <span className="font-body text-[11px] text-white/25">{award.year}</span>
+            </div>
+          </div>
+        </div>
+
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.35 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-4 pt-4 border-t border-white/5">
+                <p className="font-body text-xs leading-relaxed text-white/40">
+                  {award.description}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Expand hint */}
+        <div className="absolute bottom-0 left-0 right-0 flex justify-center py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="w-5 h-px bg-brand-gold/30" />
+        </div>
+
+        {/* Corner accent */}
+        <div className="absolute top-0 right-0 w-5 h-5 border-t border-r border-brand-gold/10 rounded-tr-xl pointer-events-none" />
+      </div>
+    </motion.div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   MEDIA MARQUEE
+   ══════════════════════════════════════════════════════════════════════ */
+
+function MediaMarquee() {
+  const items = [...mediaOutlets, ...mediaOutlets];
+  return (
+    <div className="relative w-full overflow-hidden py-5">
+      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-[#F9F8F5] to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-[#F9F8F5] to-transparent z-10 pointer-events-none" />
+      <div className="marquee-container w-full">
+        <div className="marquee-content">
+          {items.map((outlet, i) => (
             <span
-              className="inline-block w-1.5 h-1.5 rotate-45 rounded-[1px] flex-shrink-0"
-              style={{ background: "rgba(198, 168, 75, 0.3)" }}
-            />
-          </span>
-        ))}
+              key={`${outlet}-${i}`}
+              className="inline-flex items-center gap-6 sm:gap-8 font-body text-xs sm:text-sm tracking-[0.3em] uppercase select-none"
+              style={{ color: "rgba(13, 27, 42, 0.25)" }}
+            >
+              {outlet}
+              <span className="inline-block w-1.5 h-1.5 rotate-45 rounded-[1px] flex-shrink-0" style={{ background: "rgba(198,168,75,0.3)" }} />
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-/* ─── Constellation SVG Lines (between hex badges) ──────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   MOBILE CAROUSEL
+   ══════════════════════════════════════════════════════════════════════ */
 
-function ConstellationLines({ visible, activeHex }: { visible: boolean; activeHex: number }) {
-  return (
-    <svg
-      className="absolute inset-0 w-full h-full pointer-events-none z-[1]"
-      viewBox="0 0 1200 800"
-      preserveAspectRatio="xMidYMid meet"
-      aria-hidden="true"
-    >
-      {/* Lines connecting adjacent hexagons - visible on hover */}
-      {/* Row 1 connections */}
-      <motion.line
-        x1="200" y1="200" x2="600" y2="200"
-        stroke="rgba(198,168,75,0.12)"
-        strokeWidth="1"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: visible && activeHex >= 0 ? 1 : 0 }}
-        transition={{ duration: 0.5 }}
-      />
-      <motion.line
-        x1="600" y1="200" x2="1000" y2="200"
-        stroke="rgba(198,168,75,0.12)"
-        strokeWidth="1"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: visible && activeHex >= 0 ? 1 : 0 }}
-        transition={{ duration: 0.5 }}
-      />
-      {/* Row 2 connections (offset) */}
-      <motion.line
-        x1="400" y1="520" x2="800" y2="520"
-        stroke="rgba(198,168,75,0.12)"
-        strokeWidth="1"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: visible && activeHex >= 0 ? 1 : 0 }}
-        transition={{ duration: 0.5 }}
-      />
-      {/* Cross-row connections */}
-      <motion.line
-        x1="400" y1="280" x2="200" y2="440"
-        stroke="rgba(198,168,75,0.06)"
-        strokeWidth="0.5"
-        strokeDasharray="4 4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: visible && activeHex >= 0 ? 1 : 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      />
-      <motion.line
-        x1="800" y1="280" x2="1000" y2="440"
-        stroke="rgba(198,168,75,0.06)"
-        strokeWidth="0.5"
-        strokeDasharray="4 4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: visible && activeHex >= 0 ? 1 : 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      />
-    </svg>
-  );
-}
-
-/* ─── Hex-shaped dot navigation ─────────────────────────────────── */
-
-function HexDots({
-  count,
-  activeIndex,
-  onSelect,
-}: {
-  count: number;
-  activeIndex: number;
-  onSelect: (idx: number) => void;
-}) {
-  return (
-    <div
-      className="flex items-center justify-center gap-2 sm:gap-3 mt-8 sm:mt-10"
-      role="tablist"
-      aria-label="Award navigation"
-    >
-      {Array.from({ length: count }).map((_, index) => (
-        <button
-          key={index}
-          onClick={() => onSelect(index)}
-          className="transition-all duration-300"
-          style={{
-            width: index === activeIndex ? "28px" : "14px",
-            height: index === activeIndex ? "16px" : "14px",
-            clipPath:
-              "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-            background:
-              index === activeIndex
-                ? "linear-gradient(135deg, #C6A84B, #E4D49A)"
-                : "rgba(198,168,75,0.25)",
-            boxShadow:
-              index === activeIndex
-                ? "0 0 12px rgba(198,168,75,0.4)"
-                : "none",
-          }}
-          role="tab"
-          aria-selected={index === activeIndex}
-          aria-label={`Go to award ${index + 1}`}
-        />
-      ))}
-    </div>
-  );
-}
-
-/* ─── Circular arrow buttons ────────────────────────────────────── */
-
-function ArrowButton({
-  direction,
-  onClick,
-  disabled,
-}: {
-  direction: "left" | "right";
-  onClick: () => void;
-  disabled: boolean;
-}) {
-  const Icon = direction === "left" ? ChevronLeft : ChevronRight;
-
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className="relative z-30 w-11 h-11 sm:w-13 sm:h-13 rounded-full border border-brand-gold/20 bg-brand-dark/80 backdrop-blur-sm flex items-center justify-center text-brand-gold/60 hover:text-brand-gold hover:border-brand-gold/50 hover:bg-brand-dark/95 hover:shadow-[0_0_24px_rgba(198,168,75,0.2)] transition-all duration-300 disabled:opacity-0 disabled:pointer-events-none disabled:cursor-default"
-      style={{
-        clipPath:
-          "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-        width: "48px",
-        height: "48px",
-      }}
-      aria-label={`Scroll awards ${direction}`}
-    >
-      <Icon className="w-5 h-5" />
-    </button>
-  );
-}
-
-/* ─── Main Component ────────────────────────────────────────────── */
-
-export function AwardsRecognition() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [activeHex, setActiveHex] = useState(-1);
-  const [showConstellation, setShowConstellation] = useState(false);
-
-  // Mobile scroll carousel ref
+function MobileCarousel() {
   const carouselRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [activeIdx, setActiveIdx] = useState(0);
 
-  const updateScrollState = useCallback(() => {
+  const updateScroll = useCallback(() => {
     const el = carouselRef.current;
     if (!el) return;
     setCanScrollLeft(el.scrollLeft > 5);
     setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 5);
-    const cardWidth = el.querySelector<HTMLElement>(":scope > *")?.offsetWidth ?? 200;
-    const gap = 16;
-    setActiveIndex(Math.min(Math.round(el.scrollLeft / (cardWidth + gap)), awards.length - 1));
+    const cardWidth = el.querySelector<HTMLElement>(":scope > *")?.offsetWidth ?? 240;
+    setActiveIdx(Math.min(Math.round(el.scrollLeft / (cardWidth + 16)), awards.length - 1));
   }, []);
 
   useEffect(() => {
     const el = carouselRef.current;
     if (!el) return;
-    updateScrollState();
-    el.addEventListener("scroll", updateScrollState, { passive: true });
-    const observer = new ResizeObserver(updateScrollState);
-    observer.observe(el);
-    return () => {
-      el.removeEventListener("scroll", updateScrollState);
-      observer.disconnect();
-    };
-  }, [updateScrollState]);
+    updateScroll();
+    el.addEventListener("scroll", updateScroll, { passive: true });
+    return () => el.removeEventListener("scroll", updateScroll);
+  }, [updateScroll]);
 
-  const scroll = useCallback((direction: "left" | "right") => {
+  const scroll = useCallback((dir: "left" | "right") => {
     const el = carouselRef.current;
     if (!el) return;
-    const cardWidth = el.querySelector<HTMLElement>(":scope > *")?.offsetWidth ?? 200;
-    el.scrollBy({
-      left: direction === "left" ? -(cardWidth + 16) : cardWidth + 16,
-      behavior: "smooth",
-    });
-  }, []);
-
-  const scrollToIndex = useCallback((index: number) => {
-    const el = carouselRef.current;
-    if (!el) return;
-    const cardWidth = el.querySelector<HTMLElement>(":scope > *")?.offsetWidth ?? 200;
-    el.scrollTo({ left: (cardWidth + 16) * index, behavior: "smooth" });
+    const w = el.querySelector<HTMLElement>(":scope > *")?.offsetWidth ?? 240;
+    el.scrollBy({ left: dir === "left" ? -(w + 16) : w + 16, behavior: "smooth" });
   }, []);
 
   return (
+    <div className="md:hidden">
+      <div ref={carouselRef} className="flex gap-4 overflow-x-auto py-4 px-1 snap-x snap-mandatory" style={{ scrollPaddingLeft: "16px" }}>
+        {awards.map((award, i) => (
+          <AwardCard key={award.title} award={award} index={i} />
+        ))}
+      </div>
+      <div className="flex items-center justify-center gap-3 mt-4">
+        <button onClick={() => scroll("left")} disabled={!canScrollLeft}
+          className="w-9 h-9 rounded-full flex items-center justify-center border border-brand-gold/20 text-brand-gold/60 disabled:opacity-20 transition-all hover:border-brand-gold/40"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <div className="flex items-center gap-1.5">
+          {awards.map((_, i) => (
+            <div key={i} className="rounded-full transition-all duration-300"
+              style={{
+                width: i === activeIdx ? 20 : 6,
+                height: 6,
+                background: i === activeIdx ? "#C6A84B" : "rgba(198,168,75,0.2)",
+              }}
+            />
+          ))}
+        </div>
+        <button onClick={() => scroll("right")} disabled={!canScrollRight}
+          className="w-9 h-9 rounded-full flex items-center justify-center border border-brand-gold/20 text-brand-gold/60 disabled:opacity-20 transition-all hover:border-brand-gold/40"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   MAIN COMPONENT
+   ══════════════════════════════════════════════════════════════════════ */
+
+export function AwardsRecognition() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-60px" });
+
+  const featuredAwards = awards.filter((a) => a.featured);
+  const standardAwards = awards.filter((a) => !a.featured);
+
+  return (
     <section
+      ref={sectionRef}
       id="awards-recognition"
-      className="relative w-full overflow-hidden bg-brand-dark noise-overlay py-20 sm:py-28"
-      aria-label="Awards &amp; Recognition"
+      className="relative w-full overflow-hidden"
+      style={{ backgroundColor: "#F9F8F5" }}
+      aria-label="Awards & Recognition"
     >
-      {/* ── Background Effects ── */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/30 to-transparent z-10" />
-
-      {/* Subtle radial glows */}
-      <div
-        className="absolute -top-48 -left-48 w-[600px] h-[600px] rounded-full pointer-events-none z-0"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(198,168,75,0.06) 0%, transparent 60%)",
-        }}
-      />
-      <div
-        className="absolute -bottom-48 -right-48 w-[600px] h-[600px] rounded-full pointer-events-none z-0"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(198,168,75,0.04) 0%, transparent 60%)",
-        }}
+      {/* ── Top separator ── */}
+      <motion.div
+        className="absolute top-0 left-0 right-0 h-px z-10"
+        style={{ background: "linear-gradient(90deg, transparent 0%, rgba(198,168,75,0.3) 30%, rgba(198,168,75,0.5) 50%, rgba(198,168,75,0.3) 70%, transparent 100%)" }}
+        initial={{ scaleX: 0 }}
+        animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+        transition={{ duration: 1, delay: 0.2 }}
       />
 
-      {/* ── Content ── */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* ── Section heading ── */}
-        <ScrollReveal className="text-center mb-14 sm:mb-20">
-          <div className="flex flex-col items-center">
-            <span className="label-premium mb-4 block">Recognition</span>
-            <h2 className="heading-section">
-              Hall of Excellence
-            </h2>
-            <p className="subheading-premium-dark mt-4">
-              Our pursuit of legal excellence has been recognised by South Africa's most esteemed institutions — a testament to the calibre of advocacy we deliver every single day.
-            </p>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36">
+        {/* ═══════ Section Header ═══════ */}
+        <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
+          <motion.span
+            className="font-body text-[11px] sm:text-xs uppercase tracking-[0.3em] text-brand-gold mb-5 block"
+            variants={fadeUp}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            custom={0.1}
+          >
+            Awards &amp; Recognition
+          </motion.span>
+
+          <motion.div
+            className="h-px bg-gradient-to-r from-transparent via-brand-gold/60 to-transparent mx-auto mb-8 max-w-[120px]"
+            initial={{ scaleX: 0 }}
+            animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          />
+
+          <motion.h2
+            className="heading-section-light mb-6"
+            variants={fadeUp}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            custom={0.3}
+          >
+            Hall of Excellence
+          </motion.h2>
+
+          <motion.p
+            className="font-body text-base sm:text-lg text-brand-body max-w-2xl mx-auto leading-relaxed"
+            variants={fadeUp}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            custom={0.45}
+          >
+            Our pursuit of legal excellence has been recognised by South Africa&apos;s most esteemed institutions. These accolades reflect the calibre of advocacy we deliver every day and the trust our clients place in us.
+          </motion.p>
+        </div>
+
+        {/* ═══════ Featured Awards ═══════ */}
+        <div className="hidden md:grid md:grid-cols-2 gap-5 sm:gap-6 mb-10 sm:mb-14">
+          {featuredAwards.map((award) => (
+            <FeaturedAwardCard key={award.title} award={award} />
+          ))}
+        </div>
+
+        {/* Mobile: show first featured */}
+        <div className="md:hidden mb-8">
+          <FeaturedAwardCard award={featuredAwards[0]} />
+        </div>
+
+        {/* ═══════ Standard Awards — Desktop Grid ═══════ */}
+        <div className="hidden md:block mb-14 sm:mb-18">
+          <ScrollReveal>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-6 w-px bg-brand-gold/40" />
+              <span className="font-body text-xs font-semibold uppercase tracking-[0.2em] text-brand-gold/60">Additional Recognitions</span>
+              <div className="flex-1 h-px bg-brand-gold/10" />
+            </div>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            {standardAwards.map((award, i) => (
+              <AwardCard key={award.title} award={award} index={i} />
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile carousel */}
+        <MobileCarousel />
+
+        {/* ═══════ Credentials Timeline ═══════ */}
+        <ScrollReveal>
+          <div className="mt-16 sm:mt-20 p-6 sm:p-8 rounded-xl" style={{
+            background: "rgba(13,27,42,0.03)",
+            border: "1px solid rgba(198,168,75,0.08)",
+          }}>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{
+                background: "rgba(198,168,75,0.08)",
+                border: "1px solid rgba(198,168,75,0.12)",
+              }}>
+                <Sparkles className="w-4 h-4 text-brand-gold/70" strokeWidth={1.5} />
+              </div>
+              <h3 className="font-display text-lg sm:text-xl font-bold text-brand-dark">
+                Professional Credentials
+              </h3>
+            </div>
+
+            <div className="space-y-0">
+              {credentials.map((cred, i) => (
+                <motion.div
+                  key={cred.label}
+                  className="flex items-center gap-4 py-3 border-b border-brand-border/30 last:border-b-0"
+                  initial={{ opacity: 0, x: -15 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <div className="w-2 h-2 rounded-full bg-brand-gold/40 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <span className="font-body text-sm text-brand-dark/80">{cred.label}</span>
+                  </div>
+                  <span className="font-body text-xs font-bold text-brand-gold/60 flex-shrink-0">{cred.year}</span>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </ScrollReveal>
 
-        {/* ── Desktop: Honeycomb Grid Layout ── */}
-        <div
-          ref={sectionRef}
-          className="relative hidden md:block"
-          onMouseEnter={() => setShowConstellation(true)}
-          onMouseLeave={() => {
-            setShowConstellation(false);
-            setActiveHex(-1);
-          }}
-        >
-          {/* Constellation lines */}
-          <ConstellationLines visible={showConstellation} activeHex={activeHex} />
-
-          {/* Row 1: 3 hexagons */}
-          <div className="relative z-[2] flex justify-center gap-4 lg:gap-8 mb-[-20px] lg:mb-[-28px]">
-            {awards.slice(0, 3).map((award, index) => (
-              <HexBadge
-                key={award.title}
-                award={award}
-                index={index}
-                isActive={activeHex === index}
-                onHoverStart={setActiveHex}
-                onHoverEnd={() => setActiveHex(-1)}
-              />
-            ))}
-          </div>
-
-          {/* Row 2: 2 hexagons offset (honeycomb) */}
-          <div className="relative z-[2] flex justify-center gap-4 lg:gap-8 ml-[120px] lg:ml-[180px]">
-            {awards.slice(3, 5).map((award, index) => (
-              <HexBadge
-                key={award.title}
-                award={award}
-                index={index + 3}
-                isActive={activeHex === index + 3}
-                onHoverStart={setActiveHex}
-                onHoverEnd={() => setActiveHex(-1)}
-              />
-            ))}
-          </div>
-
-          {/* Centered last hex on row 3 */}
-          <div className="relative z-[2] flex justify-center mt-[-20px] lg:mt-[-28px]">
-            <HexBadge
-              key={awards[5].title}
-              award={awards[5]}
-              index={5}
-              isActive={activeHex === 5}
-              onHoverStart={setActiveHex}
-              onHoverEnd={() => setActiveHex(-1)}
-            />
-          </div>
-        </div>
-
-        {/* ── Mobile: Horizontal scroll carousel ── */}
-        <div className="relative md:hidden">
-          <div
-            ref={carouselRef}
-            className="scroll-carousel flex gap-4 overflow-x-auto py-6 px-1 snap-x snap-mandatory"
-            style={{ scrollPaddingLeft: "16px" }}
-          >
-            {awards.map((award, index) => (
-              <motion.div
-                key={award.title}
-                className="flex-shrink-0 snap-center flex items-center justify-center"
-                style={{
-                  animation: `hexFloat ${4 + index * 0.7}s ease-in-out ${index * -1.2}s infinite`,
-                }}
-                initial={{ opacity: 0, scale: 0.85 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.08 }}
-              >
-                <div className="relative">
-                  <div
-                    className="w-44 h-48"
-                    style={{
-                      clipPath:
-                        "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-                    }}
-                  >
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        background: "rgba(198,168,75,0.06)",
-                        backdropFilter: "blur(12px)",
-                        WebkitBackdropFilter: "blur(12px)",
-                      }}
-                    />
-                  </div>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center px-3 pointer-events-none">
-                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-brand-gold/10 mb-2">
-                      {(() => {
-                        const Icon = award.icon;
-                        return <Icon className="w-6 h-6 text-brand-gold" strokeWidth={1.5} />;
-                      })()}
-                    </div>
-                    <h3 className="font-display text-xs sm:text-sm font-semibold text-white text-center leading-tight mb-1">
-                      {award.title}
-                    </h3>
-                    <p className="font-body text-[11px] text-white/40 text-center mb-1">
-                      {award.org}
-                    </p>
-                    <span className="font-body text-[10px] font-semibold tracking-[0.15em] uppercase text-brand-gold/70 bg-brand-gold/10 px-2 py-0.5 rounded-full">
-                      {award.year}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Mobile arrow buttons */}
-          <div className="flex items-center justify-center gap-4 mt-2">
-            <ArrowButton
-              direction="left"
-              onClick={() => scroll("left")}
-              disabled={!canScrollLeft}
-            />
-            <ArrowButton
-              direction="right"
-              onClick={() => scroll("right")}
-              disabled={!canScrollRight}
-            />
-          </div>
-
-          {/* Hex dot navigation */}
-          <HexDots
-            count={awards.length}
-            activeIndex={activeIndex}
-            onSelect={scrollToIndex}
-          />
-        </div>
-
-        {/* ── "As Featured In" subsection ── */}
-        <ScrollReveal delay={0.25} className="mt-16 sm:mt-20">
-          <div className="flex flex-col items-center">
-            <div className="flex items-center gap-3 mb-6">
-              <span
-                className="inline-block w-1.5 h-1.5 rotate-45 rounded-[1px]"
-                style={{ background: "rgba(198, 168, 75, 0.3)" }}
-              />
-              <span
-                className="font-body text-xs sm:text-sm tracking-[0.3em] uppercase"
-                style={{ color: "rgba(198, 168, 75, 0.45)" }}
-              >
+        {/* ═══════ As Featured In ═══════ */}
+        <ScrollReveal delay={0.2}>
+          <div className="mt-12 sm:mt-16 text-center">
+            <div className="flex items-center justify-center gap-3 mb-5">
+              <div className="h-px w-8 bg-gradient-to-r from-transparent to-brand-gold/30" />
+              <span className="font-body text-[10px] sm:text-xs tracking-[0.3em] uppercase text-brand-gold/50">
                 As Featured In
               </span>
-              <span
-                className="inline-block w-1.5 h-1.5 rotate-45 rounded-[1px]"
-                style={{ background: "rgba(198, 168, 75, 0.3)" }}
-              />
+              <div className="h-px w-8 bg-gradient-to-l from-transparent to-brand-gold/30" />
             </div>
-
-            <div className="relative w-full max-w-4xl">
-              <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-brand-dark to-transparent z-10 pointer-events-none" />
-              <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-brand-dark to-transparent z-10 pointer-events-none" />
-              <FeaturedMarquee />
-            </div>
+            <MediaMarquee />
           </div>
         </ScrollReveal>
 
-        {/* ── Footer ornament ── */}
-        <div className="ornament-divider mt-12 sm:mt-16">
-          <span className="ornament-diamond" />
-        </div>
+        {/* ═══════ Quote ═══════ */}
+        <motion.div
+          className="mt-14 sm:mt-18 text-center max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Quote className="w-5 h-5 text-brand-gold/30" />
+          </div>
+          <p className="font-display text-lg sm:text-xl italic leading-relaxed" style={{ color: "rgba(13,27,42,0.6)" }}>
+            &ldquo;Recognition is meaningful only when it reflects genuine impact in the lives of the people we serve. These awards belong to our clients as much as to our team.&rdquo;
+          </p>
+          <p className="font-body text-sm font-semibold text-brand-gold mt-3">Ingrid Mtsweni, Founder</p>
+        </motion.div>
       </div>
 
-      {/* ── Keyframes ── */}
-      <style jsx>{`
-        @keyframes hexFloat {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-8px);
-          }
-        }
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
+      {/* ── Bottom separator ── */}
+      <div className="absolute bottom-0 left-0 right-0 h-px z-10"
+        style={{ background: "linear-gradient(90deg, transparent 0%, rgba(198,168,75,0.3) 30%, rgba(198,168,75,0.5) 50%, rgba(198,168,75,0.3) 70%, transparent 100%)" }}
+      />
     </section>
   );
 }
