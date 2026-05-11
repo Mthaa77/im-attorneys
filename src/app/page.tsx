@@ -9,6 +9,7 @@ import { LoadingScreen } from "@/components/im/LoadingScreen";
 import { OnboardingBanner } from "@/components/im/OnboardingBanner";
 import { Navigation } from "@/components/im/Navigation";
 import { Hero } from "@/components/im/Hero";
+import { WelcomeSection } from "@/components/im/WelcomeSection";
 import { StatsBar } from "@/components/im/StatsBar";
 import { TheFirm } from "@/components/im/TheFirm";
 import { ServicesGrid } from "@/components/im/ServicesGrid";
@@ -81,6 +82,9 @@ export default function Home() {
         <section id="home">
           <Hero />
         </section>
+
+        {/* Welcome Message from Director */}
+        <WelcomeSection />
 
         {/* Stats Bar */}
         <StatsBar />
