@@ -67,7 +67,7 @@ export function Founder() {
                 {/* Portrait image */}
                 <div className="relative aspect-[3/4] rounded-sm overflow-hidden bg-brand-parchment parallax-depth image-hover-zoom panel-3d-float">
                   <motion.img
-                    src="/images/attorney-portrait.jpg"
+                    src="/images/ingrid-mtsweni-founder.jpg"
                     alt="Ingrid Mtsweni — Founder & Director of IM Attorneys Inc"
                     className="w-full h-full object-cover object-top"
                     initial={{ scale: 1.08 }}

@@ -42,7 +42,7 @@ export function ParallaxQuote() {
         {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
-          style={{ backgroundImage: "url('/images/parallax-city.png')" }}
+          style={{ backgroundImage: "url('/images/pegasus-menlyn-maine.jpg')" }}
         />
 
         {/* 60% dark overlay */}

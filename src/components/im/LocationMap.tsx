@@ -125,8 +125,8 @@ export function LocationMap() {
             {/* Workspace photo */}
             <div className="relative w-full h-[200px] sm:h-[240px] rounded-xl overflow-hidden shadow-md group">
               <Image
-                src="/images/workspace-lounge.jpg"
-                alt="IM Attorneys modern workspace at Menlyn Maine co-working lounge"
+                src="/images/office-building-exterior.jpg"
+                alt="IM Attorneys office at Pegasus Building, Menlyn Maine Precinct, Pretoria"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 sizes="(max-width: 1024px) 100vw, 60vw"

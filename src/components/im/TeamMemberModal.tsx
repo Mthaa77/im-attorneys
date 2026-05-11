@@ -43,7 +43,7 @@ export const teamMemberDetails: TeamMemberDetail[] = [
     email: "attorneys@iminc.co.za",
     phone: "081 248 8048",
     image:
-      "https://img1.wsimg.com/isteam/ip/53d9d56f-19db-4b48-b7c6-ba9bb2b6070c/Content-Creator-Project.png",
+      "/images/ingrid-mtsweni-founder.jpg",
     bio: "Ingrid is the founder and driving force behind IM Attorneys Inc. She holds an LLB from the University of Johannesburg (2018) and brings a unique blend of banking-sector legal expertise and boutique-firm dedication. Before founding the firm, she worked in the legal department of one of South Africa's leading banking institutions, gaining invaluable commercial insight.",
     qualifications: [
       "LLB (University of Johannesburg, 2018)",
@@ -65,7 +65,7 @@ export const teamMemberDetails: TeamMemberDetail[] = [
     email: "katlego@iminc.co.za",
     phone: "071 234 1767",
     image:
-      "https://img1.wsimg.com/isteam/ip/53d9d56f-19db-4b48-b7c6-ba9bb2b6070c/IMG_0047.JPG",
+      "/images/katlego-seitisho.jpg",
     bio: "Katlego is a skilled litigation attorney with a passion for delivering strategic and effective legal solutions. With extensive courtroom experience across civil and commercial disputes, Katlego represents clients with meticulous preparation and aggressive advocacy. His approach combines thorough legal research with practical, results-driven strategies.",
     qualifications: [
       "LLB (University of Pretoria)",

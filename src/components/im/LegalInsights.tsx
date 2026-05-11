@@ -18,7 +18,7 @@ const articles = [
       "A comprehensive guide to ANC contracts — in community vs out of community of property, and how the Matrimonial Property Act protects your assets.",
     date: "15 April 2025",
     readTime: "5 min read",
-    image: "/images/hero-building.png",
+    image: "/images/pegasus-menlyn-maine.jpg",
   },
   {
     category: "Criminal Law",
@@ -27,7 +27,7 @@ const articles = [
       "Knowing your constitutional rights during an arrest can protect you from self-incrimination and ensure fair treatment throughout the legal process.",
     date: "2 April 2025",
     readTime: "4 min read",
-    image: "/images/parallax-city.png",
+    image: "/images/office-building-exterior.jpg",
   },
   {
     category: "RAF Claims",
@@ -36,7 +36,7 @@ const articles = [
       "Step-by-step instructions for filing a RAF claim, including required documentation, deadlines, and common pitfalls to avoid.",
     date: "20 March 2025",
     readTime: "6 min read",
-    image: "/images/hero-building.png",
+    image: "/images/pegasus-menlyn-maine.jpg",
   },
 ];
 
